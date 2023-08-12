@@ -11,11 +11,12 @@ import java.util.List;
 
 public class UserDaoHandler {
     public User addUser(User user) {
+
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "insert into User(username,password) values (?,?)");
+                    "insert into \"User\"(username,password) values (?,?)");
 
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
@@ -34,14 +35,13 @@ public class UserDaoHandler {
     }
     public User updateUser(int id, User user) {
         try(Connection connect = DatabaseConnection.getConnection()) {
-
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "update User set username=?,password=? where id=?");
+                    "update \"User\" set username=?,password=? where id=?");
 
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setInt(311, id);
+            preparedStatement.setInt(3, id);
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
@@ -61,7 +61,7 @@ public class UserDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "delete from User where id =?");
+                    "delete from \"User\" where id =?");
 
             preparedStatement.setInt(1, id);
 
@@ -70,7 +70,7 @@ public class UserDaoHandler {
                 throw new SQLException("Deleting user failed, no rows affected.");
             }
 
-            System.out.printf("user with %s deleted \n", id);
+            System.out.printf("user with id = %s deleted \n", id);
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,7 +83,7 @@ public class UserDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from User where id=?");
+                    "select * from \"User\" where id=?");
 
             preparedStatement.setInt(1, id);
 
@@ -109,7 +109,7 @@ public class UserDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from User");
+                    "select * from \"User\"");
             ResultSet resultSet
                     = preparedStatement.executeQuery();
 

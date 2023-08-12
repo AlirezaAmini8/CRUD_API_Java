@@ -2,17 +2,18 @@ package com.example.view;
 
 import com.example.controller.UserDaoHandler;
 import com.example.models.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.sql.SQLException;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/users")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
     private UserDaoHandler userDao = new UserDaoHandler();
+    ObjectMapper mapper = new ObjectMapper();
 
     @GET
     public List<User> getAllUsers() {
@@ -21,18 +22,30 @@ public class UserResource {
 
     @GET
     @Path("/{id}")
-    public User getUserById(@PathParam("id") int id) {
-        return userDao.getUserById(id);
+    public Response getUserById(@PathParam("id") int id) {
+        User foundedUser = userDao.getUserById(id);
+        return Response.status(Response.Status.FOUND)
+                .entity(foundedUser)
+                .build();
     }
 
     @POST
-    public User createUser(User user) {
-        return userDao.addUser(user);
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createUser(String input) throws JsonProcessingException {
+        User user = mapper.readValue(input, User.class);
+        User createdUser = userDao.addUser(user);
+        return Response.status(Response.Status.CREATED)
+                .entity(createdUser)
+                .build();
     }
 
     @PUT
     @Path("/{id}")
-    public User updateUser(@PathParam("id") int id, User user) {
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public User updateUser(@PathParam("id") int id, String input) throws JsonProcessingException {
+        User user = mapper.readValue(input, User.class);
         return userDao.updateUser(id, user);
     }
 

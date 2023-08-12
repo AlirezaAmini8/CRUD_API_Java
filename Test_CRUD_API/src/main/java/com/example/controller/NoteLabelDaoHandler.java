@@ -15,7 +15,7 @@ public class NoteLabelDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "INSERT INTO Note_Label (note_id, label_id) VALUES (?, ?)");
+                    "INSERT INTO \"Note_Label\" (note_id, label_id) VALUES (?, ?)");
 
             preparedStatement.setInt(1, noteLabel.getNote_id());
             preparedStatement.setInt(2, noteLabel.getLabel_id());
@@ -25,7 +25,7 @@ public class NoteLabelDaoHandler {
                 throw new SQLException("creating note_label failed, no rows affected.");
             }
 
-            System.out.println("user inserted");
+            System.out.println("note label inserted");
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -37,7 +37,7 @@ public class NoteLabelDaoHandler {
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement = connect.prepareStatement(
-                    "SELECT * FROM Note_Label WHERE note_id = ?");
+                    "SELECT * FROM \"Note_Label\" WHERE note_id = ?");
 
             preparedStatement.setInt(1, noteId);
 
@@ -62,7 +62,7 @@ public class NoteLabelDaoHandler {
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement = connect.prepareStatement(
-                    "SELECT * FROM Note_Label WHERE label_id = ?");
+                    "SELECT * FROM \"Note_Label\" WHERE label_id = ?");
 
             preparedStatement.setInt(1, labelId);
 
@@ -84,7 +84,7 @@ public class NoteLabelDaoHandler {
     public void deleteNoteLabel(int noteId, int labelId) {
         try(Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement = connect.prepareStatement(
-                    "DELETE FROM Note_Label WHERE note_id = ? AND label_id = ?");
+                    "DELETE FROM \"Note_Label\" WHERE note_id = ? AND label_id = ?");
             preparedStatement.setInt(1, noteId);
             preparedStatement.setInt(2, labelId);
 

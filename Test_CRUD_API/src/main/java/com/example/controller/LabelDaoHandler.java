@@ -14,7 +14,7 @@ public class LabelDaoHandler {
         try (Connection connect = DatabaseConnection.getConnection()){
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "insert into Label(user_id,content) values (?,?)");
+                    "insert into \"Label\"(user_id,content) values (?,?)");
 
             preparedStatement.setInt(1, label.getUser_id());
             preparedStatement.setString(2, label.getContent());
@@ -34,7 +34,7 @@ public class LabelDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "update Label set content=? where id=?");
+                    "update \"Label\" set content=? where id=?");
 
             preparedStatement.setString(1, label.getContent());
             preparedStatement.setInt(2, id);
@@ -54,7 +54,7 @@ public class LabelDaoHandler {
         try (Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "delete from Label where id =?");
+                    "delete from \"Label\" where id =?");
 
             preparedStatement.setInt(1, id);
 
@@ -63,7 +63,7 @@ public class LabelDaoHandler {
                 throw new SQLException("Deleting label failed, no rows affected.");
             }
 
-            System.out.printf("label with %s deleted \n", id);
+            System.out.printf("label with id = %s deleted \n", id);
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -73,7 +73,7 @@ public class LabelDaoHandler {
         try (Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from Label where id=?");
+                    "select * from \"Label\" where id=?");
 
             preparedStatement.setInt(1, id);
 
@@ -97,7 +97,7 @@ public class LabelDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from Label");
+                    "select * from \"Label\"");
             ResultSet resultSet
                     = preparedStatement.executeQuery();
 

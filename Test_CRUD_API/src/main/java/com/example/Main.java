@@ -14,7 +14,7 @@ public class Main {
         server.setHandler(context);
 
         ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/*");
-        jerseyServlet.setInitOrder(0);
+        jerseyServlet.setInitOrder(1);
         jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "com.example.view");
 
         try {

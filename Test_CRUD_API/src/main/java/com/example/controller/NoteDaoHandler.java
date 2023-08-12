@@ -12,7 +12,7 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "insert into Note(user_id,title,content,created_at,modified_at) values (?,?,?,?,?)");
+                    "insert into \"Note\"(user_id,title,content,created_at,modified_at) values (?,?,?,?,?)");
 
             preparedStatement.setInt(1, note.getUser_id());
             preparedStatement.setString(2, note.getTitle());
@@ -37,7 +37,7 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "update Note set title=?,content=?,modified_at=? where id=?");
+                    "update \"Note\" set title=?,content=?,modified_at=? where id=?");
 
             preparedStatement.setString(1, note.getTitle());
             preparedStatement.setString(2, note.getContent());
@@ -61,7 +61,7 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "delete from Note where id =?");
+                    "delete from \"Note\" where id =?");
 
             preparedStatement.setInt(1, id);
 
@@ -69,7 +69,7 @@ public class NoteDaoHandler {
             if (affectedRows == 0) {
                 throw new SQLException("Deleting note failed, no rows affected.");
             }
-            System.out.printf("note with %s deleted \n", id);
+            System.out.printf("note with id = %s deleted \n", id);
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -82,7 +82,7 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from Note where id=?");
+                    "select * from \"Note\" where id=?");
 
             preparedStatement.setInt(1, id);
 
@@ -111,7 +111,7 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from Note");
+                    "select * from \"Note\"");
             ResultSet resultSet
                     = preparedStatement.executeQuery();
 
