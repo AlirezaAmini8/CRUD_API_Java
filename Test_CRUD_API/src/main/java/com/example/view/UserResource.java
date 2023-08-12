@@ -15,30 +15,30 @@ public class UserResource {
     private UserDaoHandler userDao = new UserDaoHandler();
 
     @GET
-    public List<User> getAllUsers() throws SQLException {
+    public List<User> getAllUsers() {
         return userDao.getAllUsers();
     }
 
     @GET
     @Path("/{id}")
-    public User getUserById(@PathParam("id") int id) throws SQLException {
+    public User getUserById(@PathParam("id") int id) {
         return userDao.getUserById(id);
     }
 
     @POST
-    public User createUser(User user) throws SQLException {
+    public User createUser(User user) {
         return userDao.addUser(user);
     }
 
     @PUT
     @Path("/{id}")
-    public User updateUser(@PathParam("id") int id, User user) throws SQLException {
+    public User updateUser(@PathParam("id") int id, User user) {
         return userDao.updateUser(id, user);
     }
 
     @DELETE
     @Path("/{id}")
-    public void deleteUser(@PathParam("id") int id) throws SQLException {
+    public void deleteUser(@PathParam("id") int id) {
         userDao.deleteUser(id);
     }
 

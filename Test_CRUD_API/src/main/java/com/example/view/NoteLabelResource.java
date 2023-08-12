@@ -15,25 +15,25 @@ public class NoteLabelResource {
     private NoteLabelDaoHandler noteLabelDao = new NoteLabelDaoHandler();
 
     @POST
-    public void createNoteLabel(NoteLabel noteLabel) throws SQLException {
+    public void createNoteLabel(NoteLabel noteLabel) {
         noteLabelDao.addNoteLabel(noteLabel);
     }
 
     @GET
     @Path("/note/{noteId}")
-    public List<NoteLabel> getNoteLabelsForNote(@PathParam("noteId") int noteId) throws SQLException {
+    public List<NoteLabel> getNoteLabelsForNote(@PathParam("noteId") int noteId) {
         return noteLabelDao.getNoteLabelsForNote(noteId);
     }
 
     @GET
     @Path("/label/{labelId}")
-    public List<NoteLabel> getNoteLabelsForLabel(@PathParam("labelId") int labelId) throws SQLException {
+    public List<NoteLabel> getNoteLabelsForLabel(@PathParam("labelId") int labelId) {
         return noteLabelDao.getNoteLabelsForLabel(labelId);
     }
 
     @DELETE
     @Path("/note/{noteId}/label/{labelId}")
-    public void deleteNoteLabel(@PathParam("noteId") int noteId, @PathParam("labelId") int labelId) throws SQLException {
+    public void deleteNoteLabel(@PathParam("noteId") int noteId, @PathParam("labelId") int labelId) {
         noteLabelDao.deleteNoteLabel(noteId, labelId);
     }
 }

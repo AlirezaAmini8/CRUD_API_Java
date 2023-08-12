@@ -10,113 +10,120 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHandler {
-    public User addUser(User user) throws SQLException {
-        Connection connect = DatabaseConnection.getConnection();
+    public User addUser(User user) {
+        try(Connection connect = DatabaseConnection.getConnection()) {
 
-        PreparedStatement preparedStatement
-                = connect.prepareStatement(
-                "insert into User(username,password) values (?,?)");
+            PreparedStatement preparedStatement
+                    = connect.prepareStatement(
+                    "insert into User(username,password) values (?,?)");
 
-        preparedStatement.setString(1, user.getUsername());
-        preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getPassword());
 
-        int affectedRows = preparedStatement.executeUpdate();
-        if (affectedRows == 0) {
-            throw new SQLException("creating user failed, no rows affected.");
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("creating user failed, no rows affected.");
+            }
+
+            System.out.println("user inserted");
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        System.out.println("user inserted");
-
-        connect.close();
 
         return user;
     }
-    public User updateUser(int id, User user) throws SQLException {
-        Connection connect = DatabaseConnection.getConnection();
+    public User updateUser(int id, User user) {
+        try(Connection connect = DatabaseConnection.getConnection()) {
 
-        PreparedStatement preparedStatement
-                = connect.prepareStatement(
-                "update User set username=?,password=? where id=?");
+            PreparedStatement preparedStatement
+                    = connect.prepareStatement(
+                    "update User set username=?,password=? where id=?");
 
-        preparedStatement.setString(1, user.getUsername());
-        preparedStatement.setString(2, user.getPassword());
-        preparedStatement.setInt(311, id);
+            preparedStatement.setString(1, user.getUsername());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setInt(311, id);
 
-        int affectedRows = preparedStatement.executeUpdate();
-        if (affectedRows == 0) {
-            throw new SQLException("updating user failed, no rows affected.");
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("updating user failed, no rows affected.");
+            }
+
+            System.out.println("user updated");
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        System.out.println("user updated");
-
-        connect.close();
 
         return user;
     }
-    public void deleteUser(int id) throws SQLException
-    {
-        Connection connect = DatabaseConnection.getConnection();
+    public void deleteUser(int id) {
 
-        PreparedStatement preparedStatement
-                = connect.prepareStatement(
-                "delete from User where id =?");
+        try(Connection connect = DatabaseConnection.getConnection()) {
 
-        preparedStatement.setInt(1, id);
+            PreparedStatement preparedStatement
+                    = connect.prepareStatement(
+                    "delete from User where id =?");
 
-        int affectedRows = preparedStatement.executeUpdate();
-        if (affectedRows == 0) {
-            throw new SQLException("Deleting user failed, no rows affected.");
+            preparedStatement.setInt(1, id);
+
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Deleting user failed, no rows affected.");
+            }
+
+            System.out.printf("user with %s deleted \n", id);
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        System.out.printf("user with %s deleted \n",id);
-
-        connect.close();
     }
-    public User getUserById(int id) throws SQLException {
+    public User getUserById(int id) {
         User user = new User();
 
-        Connection connect = DatabaseConnection.getConnection();
+        try(Connection connect = DatabaseConnection.getConnection()) {
 
-        PreparedStatement preparedStatement
-                = connect.prepareStatement(
-                "select * from User where id=?");
+            PreparedStatement preparedStatement
+                    = connect.prepareStatement(
+                    "select * from User where id=?");
 
-        preparedStatement.setInt(1, id);
+            preparedStatement.setInt(1, id);
 
-        ResultSet resultSet
-                = preparedStatement.executeQuery();
+            ResultSet resultSet
+                    = preparedStatement.executeQuery();
 
-        if (resultSet.next()) {
-            user.setId(resultSet.getInt(1));
-            user.setUsername(resultSet.getString(2));
-            user.setPassword(resultSet.getString(3));
+            if (resultSet.next()) {
+                user.setId(resultSet.getInt(1));
+                user.setUsername(resultSet.getString(2));
+                user.setPassword(resultSet.getString(3));
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
-        connect.close();
 
         return user;
     }
-    public List<User> getAllUsers() throws SQLException {
+    public List<User> getAllUsers() {
 
         List<User> users = new ArrayList<User>();
 
-        Connection connect = DatabaseConnection.getConnection();
+        try(Connection connect = DatabaseConnection.getConnection()) {
 
-        PreparedStatement preparedStatement
-                = connect.prepareStatement(
-                "select * from User");
-        ResultSet resultSet
-                = preparedStatement.executeQuery();
+            PreparedStatement preparedStatement
+                    = connect.prepareStatement(
+                    "select * from User");
+            ResultSet resultSet
+                    = preparedStatement.executeQuery();
 
-        while (resultSet.next()) {
-            User user = new User();
-            user.setId(resultSet.getInt(1));
-            user.setUsername(resultSet.getString(2));
-            user.setPassword(resultSet.getString(3));
-            // store the values into the list
-            users.add(user);
+            while (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt(1));
+                user.setUsername(resultSet.getString(2));
+                user.setPassword(resultSet.getString(3));
+                // store the values into the list
+                users.add(user);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        connect.close();
 
         return users;
     }
