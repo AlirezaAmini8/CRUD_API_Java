@@ -17,8 +17,11 @@ public class NoteResource {
     ObjectMapper mapper = new ObjectMapper();
 
     @GET
-    public List<Note> getAllNotes() {
-        return noteDao.getAllNotes();
+    public Response getAllNotes() {
+        List<Note> notes = noteDao.getAllNotes();
+        return Response.status(Response.Status.FOUND)
+                .entity(notes)
+                .build();
     }
 
     @GET
@@ -45,15 +48,21 @@ public class NoteResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Note updateNote(@PathParam("id") int id, String input) throws JsonProcessingException {
+    public Response updateNote(@PathParam("id") int id, String input) throws JsonProcessingException {
         Note note = mapper.readValue(input, Note.class);
-        return noteDao.updateNote(id, note);
+        Note updatedNote = noteDao.updateNote(id, note);
+        return Response.status(Response.Status.OK)
+                .entity(updatedNote)
+                .build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void deleteNote(@PathParam("id") int id) {
-        noteDao.deleteNote(id);
+    public Response deleteNote(@PathParam("id") int id) {
+        Note note = noteDao.deleteNote(id);
+        return Response.status(Response.Status.OK)
+                .entity(note)
+                .build();
     }
 
 }

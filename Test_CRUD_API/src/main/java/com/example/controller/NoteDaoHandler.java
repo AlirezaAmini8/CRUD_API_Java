@@ -56,7 +56,8 @@ public class NoteDaoHandler {
 
         return note;
     }
-    public void deleteNote(int id) {
+    public Note deleteNote(int id) {
+        Note note = new Note();
         try (Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
@@ -65,15 +66,22 @@ public class NoteDaoHandler {
 
             preparedStatement.setInt(1, id);
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows == 0) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()) {
                 throw new SQLException("Deleting note failed, no rows affected.");
+            }else {
+                note.setId(resultSet.getInt(1));
+                note.setUser_id(resultSet.getInt(2));
+                note.setTitle(resultSet.getString(3));
+                note.setContent(resultSet.getString(4));
+                note.setCreated_at(resultSet.getDate(5));
+                note.setModified_at(resultSet.getDate(6));
+                System.out.printf("note with id = %s deleted \n", id);
             }
-            System.out.printf("note with id = %s deleted \n", id);
         }catch (SQLException e) {
             e.printStackTrace();
         }
-
+        return note;
     }
     public  Note getNoteById(int id) {
         Note note = new Note();

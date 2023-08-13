@@ -16,8 +16,11 @@ public class LabelResource {
     ObjectMapper mapper = new ObjectMapper();
 
     @GET
-    public List<Label> getAllLabels() {
-        return labelDao.getAllLabels();
+    public Response getAllLabels() {
+        List<Label> labels = labelDao.getAllLabels();
+        return Response.status(Response.Status.FOUND)
+                .entity(labels)
+                .build();
     }
 
     @GET
@@ -44,14 +47,20 @@ public class LabelResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Label updateLabel(@PathParam("id") int id, String input) throws JsonProcessingException {
+    public Response updateLabel(@PathParam("id") int id, String input) throws JsonProcessingException {
         Label label = mapper.readValue(input, Label.class);
-        return labelDao.updateLabel(id, label);
+        Label updatedLabel = labelDao.updateLabel(id, label);
+        return Response.status(Response.Status.OK)
+                .entity(updatedLabel)
+                .build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void deleteLabel(@PathParam("id") int id) {
-        labelDao.deleteLabel(id);
+    public Response deleteLabel(@PathParam("id") int id) {
+        Label label = labelDao.deleteLabel(id);
+        return Response.status(Response.Status.OK)
+                .entity(label)
+                .build();
     }
 }

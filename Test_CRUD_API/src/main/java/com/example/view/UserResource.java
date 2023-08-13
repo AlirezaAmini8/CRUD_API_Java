@@ -16,8 +16,11 @@ public class UserResource {
     ObjectMapper mapper = new ObjectMapper();
 
     @GET
-    public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+    public Response getAllUsers() {
+        List<User> users = userDao.getAllUsers();
+        return Response.status(Response.Status.FOUND)
+                .entity(users)
+                .build();
     }
 
     @GET
@@ -44,15 +47,21 @@ public class UserResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public User updateUser(@PathParam("id") int id, String input) throws JsonProcessingException {
+    public Response updateUser(@PathParam("id") int id, String input) throws JsonProcessingException {
         User user = mapper.readValue(input, User.class);
-        return userDao.updateUser(id, user);
+        User updatedUser = userDao.updateUser(id, user);
+        return Response.status(Response.Status.OK)
+                .entity(updatedUser)
+                .build();
     }
 
     @DELETE
     @Path("/{id}")
-    public void deleteUser(@PathParam("id") int id) {
-        userDao.deleteUser(id);
+    public Response deleteUser(@PathParam("id") int id) {
+        User user = userDao.deleteUser(id);
+        return Response.status(Response.Status.OK)
+                .entity(user)
+                .build();
     }
 
 }

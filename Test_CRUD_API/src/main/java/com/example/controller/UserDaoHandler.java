@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.models.User;
 
+import javax.jws.soap.SOAPBinding;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,8 +56,8 @@ public class UserDaoHandler {
 
         return user;
     }
-    public void deleteUser(int id) {
-
+    public User deleteUser(int id) {
+        User user = new User();
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
@@ -65,16 +66,20 @@ public class UserDaoHandler {
 
             preparedStatement.setInt(1, id);
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows == 0) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()) {
                 throw new SQLException("Deleting user failed, no rows affected.");
+            }else{
+                user.setId(resultSet.getInt(1));
+                user.setUsername(resultSet.getString(2));
+                user.setPassword(resultSet.getString(3));
             }
 
             System.out.printf("user with id = %s deleted \n", id);
         }catch (SQLException e) {
             e.printStackTrace();
         }
-
+        return user;
     }
     public User getUserById(int id) {
         User user = new User();

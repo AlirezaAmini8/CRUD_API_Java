@@ -90,22 +90,28 @@ public class NoteLabelDaoHandler {
         return noteLabels;
     }
 
-    public void deleteNoteLabel(int noteId, int labelId) {
+    public NoteLabel deleteNoteLabel(int noteId, int labelId) {
+        NoteLabel noteLabel = new NoteLabel();
+
         try(Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement = connect.prepareStatement(
                     "DELETE FROM \"Note_Label\" WHERE note_id = ? AND label_id = ?");
             preparedStatement.setInt(1, noteId);
             preparedStatement.setInt(2, labelId);
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows == 0) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(!resultSet.next()){
                 throw new SQLException("Deleting note label failed, no rows affected.");
+            }else{
+                noteLabel.setNote_id(resultSet.getInt("note_id"));
+                noteLabel.setLabel_id(resultSet.getInt("label_id"));
+                System.out.println("noteLabel deleted");
             }
-            System.out.println("noteLabel deleted");
         }catch (SQLException e) {
             e.printStackTrace();
         }
-
+        return noteLabel;
     }
 
     private int getNoteUserId(int noteId, Connection connection) throws SQLException {

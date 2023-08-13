@@ -50,7 +50,8 @@ public class LabelDaoHandler {
         }
         return label;
     }
-    public void deleteLabel(int id) {
+    public Label deleteLabel(int id) {
+        Label label = new Label();
         try (Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -58,15 +59,19 @@ public class LabelDaoHandler {
 
             preparedStatement.setInt(1, id);
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows == 0) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next()) {
                 throw new SQLException("Deleting label failed, no rows affected.");
+            }else {
+                label.setId(resultSet.getInt(1));
+                label.setUser_id(resultSet.getInt(2));
+                label.setContent(resultSet.getString(3));
+                System.out.printf("label with id = %s deleted \n", id);
             }
-
-            System.out.printf("label with id = %s deleted \n", id);
         }catch (SQLException e) {
             e.printStackTrace();
         }
+        return label;
     }
     public Label getLabelById(int id) {
         Label label = new Label();

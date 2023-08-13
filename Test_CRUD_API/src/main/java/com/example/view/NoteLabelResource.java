@@ -16,7 +16,6 @@ public class NoteLabelResource {
     ObjectMapper mapper = new ObjectMapper();
 
     @POST
-
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createNoteLabel(String input) throws JsonProcessingException {
@@ -29,27 +28,28 @@ public class NoteLabelResource {
 
     @GET
     @Path("/note/{noteId}")
-    public List<NoteLabel> getNoteLabelsForNote(@PathParam("noteId") int noteId) {
+    public Response getNoteLabelsForNote(@PathParam("noteId") int noteId) {
         List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForNote(noteId);
-        for(NoteLabel noteLabel: noteLabels){
-            System.out.println(noteLabel.getLabel_id());
-        }
-        return noteLabels;
+        return Response.status(Response.Status.FOUND)
+                .entity(noteLabels)
+                .build();
     }
 
     @GET
     @Path("/label/{labelId}")
-    public List<NoteLabel> getNoteLabelsForLabel(@PathParam("labelId") int labelId) {
+    public Response getNoteLabelsForLabel(@PathParam("labelId") int labelId) {
         List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForLabel(labelId);
-        for(NoteLabel noteLabel: noteLabels){
-            System.out.println(noteLabel.getNote_id());
-        }
-        return noteLabels;
+        return Response.status(Response.Status.FOUND)
+                .entity(noteLabels)
+                .build();
     }
 
     @DELETE
     @Path("/note/{noteId}/label/{labelId}")
-    public void deleteNoteLabel(@PathParam("noteId") int noteId, @PathParam("labelId") int labelId) {
-        noteLabelDao.deleteNoteLabel(noteId, labelId);
+    public Response deleteNoteLabel(@PathParam("noteId") int noteId, @PathParam("labelId") int labelId) {
+        NoteLabel noteLabel = noteLabelDao.deleteNoteLabel(noteId, labelId);
+        return Response.status(Response.Status.OK)
+                .entity(noteLabel)
+                .build();
     }
 }
