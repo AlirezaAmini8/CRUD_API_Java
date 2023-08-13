@@ -22,6 +22,7 @@ public class UserResource {
     ObjectMapper mapper = new ObjectMapper();
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all users")
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class, type = "array")))
     public Response getAllUsers() {

@@ -17,8 +17,11 @@ public class NoteDaoHandler {
             preparedStatement.setInt(1, note.getUser_id());
             preparedStatement.setString(2, note.getTitle());
             preparedStatement.setString(3, note.getContent());
-            preparedStatement.setDate(4, note.getCreated_at());
-            preparedStatement.setDate(5, note.getModified_at());
+            Date now = new Date(System.currentTimeMillis());
+            note.setCreated_at(now);
+            note.setModified_at(now);
+            preparedStatement.setDate(4, now);
+            preparedStatement.setDate(5, now);
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
@@ -41,7 +44,9 @@ public class NoteDaoHandler {
 
             preparedStatement.setString(1, note.getTitle());
             preparedStatement.setString(2, note.getContent());
-            preparedStatement.setDate(3, note.getModified_at());
+            Date now = new Date(System.currentTimeMillis());
+            note.setModified_at(now);
+            preparedStatement.setDate(3, now);
             preparedStatement.setInt(4, id);
 
             int affectedRows = preparedStatement.executeUpdate();
