@@ -40,7 +40,7 @@ public class NoteLabelResource {
     @GET
     @Path("/label/{labelId}")
     public List<NoteLabel> getNoteLabelsForLabel(@PathParam("labelId") int labelId) {
-        List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForNote(labelId);
+        List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForLabel(labelId);
         for(NoteLabel noteLabel: noteLabels){
             System.out.println(noteLabel.getNote_id());
         }

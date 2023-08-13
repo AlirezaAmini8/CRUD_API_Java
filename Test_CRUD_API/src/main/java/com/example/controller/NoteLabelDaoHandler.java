@@ -13,19 +13,28 @@ public class NoteLabelDaoHandler {
     public NoteLabel addNoteLabel(NoteLabel noteLabel) {
         try(Connection connect = DatabaseConnection.getConnection()) {
 
-            PreparedStatement preparedStatement
-                    = connect.prepareStatement(
-                    "INSERT INTO \"Note_Label\" (note_id, label_id) VALUES (?, ?)");
+            int noteUserId = getNoteUserId(noteLabel.getNote_id(), connect);
 
-            preparedStatement.setInt(1, noteLabel.getNote_id());
-            preparedStatement.setInt(2, noteLabel.getLabel_id());
+            int labelUserId = getLabelUserId(noteLabel.getLabel_id(), connect);
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("creating note_label failed, no rows affected.");
+            if (noteUserId == labelUserId) {
+                PreparedStatement preparedStatement
+                        = connect.prepareStatement(
+                        "INSERT INTO \"Note_Label\" (note_id, label_id) VALUES (?, ?)");
+
+                preparedStatement.setInt(1, noteLabel.getNote_id());
+                preparedStatement.setInt(2, noteLabel.getLabel_id());
+
+                int affectedRows = preparedStatement.executeUpdate();
+                if (affectedRows == 0) {
+                    throw new SQLException("creating note_label failed, no rows affected.");
+                }
+
+                System.out.println("note label inserted");
             }
-
-            System.out.println("note label inserted");
+            else {
+                System.out.println("Label doesn't belong to the user of the note.");
+            }
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -97,5 +106,31 @@ public class NoteLabelDaoHandler {
             e.printStackTrace();
         }
 
+    }
+
+    private int getNoteUserId(int noteId, Connection connection) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT user_id FROM \"Note\" WHERE id = ?");
+        preparedStatement.setInt(1, noteId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getInt("user_id");
+        }
+
+        return -1;
+    }
+
+    private int getLabelUserId(int labelId, Connection connection) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                "SELECT user_id FROM \"Label\" WHERE id = ?");
+        preparedStatement.setInt(1, labelId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet.next()) {
+            return resultSet.getInt("user_id");
+        }
+
+        return -1;
     }
 }
