@@ -1,5 +1,6 @@
 package com.example;
 
+import io.swagger.v3.jaxrs2.integration.OpenApiServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -16,6 +17,12 @@ public class Main {
         ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, "/*");
         jerseyServlet.setInitOrder(1);
         jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "com.example.view");
+
+        // Add Swagger UI servlet
+        ServletHolder swaggerServlet = context.addServlet(OpenApiServlet.class, "/swagger-ui/*");
+        swaggerServlet.setInitOrder(2);
+        swaggerServlet.setInitParameter("openApi.configuration.resourcePackages",
+                "com.example.view");
 
         try {
             server.start();
