@@ -2,7 +2,6 @@ package com.example.controller;
 
 import com.example.models.User;
 
-import javax.jws.soap.SOAPBinding;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
