@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoteDaoHandler {
+
     public Note addNote(Note note) {
         try(Connection connect = DatabaseConnection.getConnection()) {
 

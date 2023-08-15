@@ -58,3 +58,4 @@ public class Note {
         this.modified_at = modified_at;
     }
 }
+
