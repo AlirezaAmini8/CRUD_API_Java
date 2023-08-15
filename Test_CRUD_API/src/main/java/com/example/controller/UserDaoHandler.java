@@ -34,6 +34,8 @@ public class UserDaoHandler {
         return user;
     }
     public User updateUser(int id, User user) {
+        User updatedUser = null;
+
         try(Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -43,20 +45,24 @@ public class UserDaoHandler {
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setInt(3, id);
 
-            int affectedRows = preparedStatement.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("updating user failed, no rows affected.");
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                updatedUser = new User();
+                updatedUser.setId(resultSet.getInt(1));
+                updatedUser.setUsername(resultSet.getString(2));
+                updatedUser.setPassword(resultSet.getString(3));
+                System.out.println("user updated");
             }
 
-            System.out.println("user updated");
         }catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return user;
+        return updatedUser;
     }
     public User deleteUser(int id) {
-        User user = new User();
+        User user = null;
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
@@ -66,22 +72,21 @@ public class UserDaoHandler {
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next()) {
-                throw new SQLException("Deleting user failed, no rows affected.");
-            }else{
+            if (resultSet.next()) {
+                user = new User();
                 user.setId(resultSet.getInt(1));
                 user.setUsername(resultSet.getString(2));
                 user.setPassword(resultSet.getString(3));
+                System.out.printf("user with id = %s deleted \n", id);
             }
 
-            System.out.printf("user with id = %s deleted \n", id);
         }catch (SQLException e) {
             e.printStackTrace();
         }
         return user;
     }
     public User getUserById(int id) {
-        User user = new User();
+        User user = null;
 
         try(Connection connect = DatabaseConnection.getConnection()) {
 
@@ -91,10 +96,10 @@ public class UserDaoHandler {
 
             preparedStatement.setInt(1, id);
 
-            ResultSet resultSet
-                    = preparedStatement.executeQuery();
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                user = new User();
                 user.setId(resultSet.getInt(1));
                 user.setUsername(resultSet.getString(2));
                 user.setPassword(resultSet.getString(3));

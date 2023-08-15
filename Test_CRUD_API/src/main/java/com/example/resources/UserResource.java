@@ -24,13 +24,19 @@ public class UserResource {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Return all users", notes = "Returns all users exist in db", response = User.class )
     @ApiResponses({
-            @ApiResponse(code = 200, message = "ok")
+            @ApiResponse(code = 200, message = "ok"),
+            @ApiResponse(code = 404, message = "not find any user")
     })
     public Response getAllUsers() {
         List<User> users = userDao.getAllUsers();
-        return Response.status(Response.Status.OK)
-                .entity(users)
-                .build();
+        if(!users.isEmpty()) {
+            return Response.status(Response.Status.OK)
+                    .entity(users)
+                    .build();
+        }else {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .build();
+        }
     }
 
     @GET
@@ -57,14 +63,21 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "create a user", notes = "create a user based on information you inter", response = User.class)
     @ApiResponses({
-            @ApiResponse(code = 201, message = "created")
+            @ApiResponse(code = 201, message = "created"),
+            @ApiResponse(code = 400, message = "Bad request.")
     })
-    public Response createUser(String input) throws IOException {
-        User user = mapper.readValue(input, User.class);
-        User createdUser = userDao.addUser(user);
-        return Response.status(Response.Status.CREATED)
-                .entity(createdUser)
-                .build();
+    public Response createUser(String input) {
+        try {
+            User user = mapper.readValue(input, User.class);
+            User createdUser = userDao.addUser(user);
+            return Response.status(Response.Status.CREATED)
+                    .entity(createdUser)
+                    .build();
+        }catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid input format for User")
+                    .build();
+        }
     }
 
     @PUT
@@ -74,17 +87,27 @@ public class UserResource {
     @ApiOperation(value = "update an existing user", notes = "update a user with specific id and information you give", response = User.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "User not found")
+            @ApiResponse(code = 404, message = "User not found"),
+            @ApiResponse(code = 400, message = "Bad request")
     })
-    public Response updateUser(@PathParam("id") int id, String input) throws IOException {
-        User user = mapper.readValue(input, User.class);
-        User updatedUser = userDao.updateUser(id, user);
-        if (updatedUser != null) {
-            return Response.status(Response.Status.OK)
-                    .entity(updatedUser)
-                    .build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND)
+    public Response updateUser(@PathParam("id") int id, String input) {
+
+        try {
+            User user = mapper.readValue(input, User.class);
+
+            User updatedUser = userDao.updateUser(id, user);
+
+            if (updatedUser != null) {
+                return Response.status(Response.Status.OK)
+                        .entity(updatedUser)
+                        .build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid input format for User")
                     .build();
         }
     }
