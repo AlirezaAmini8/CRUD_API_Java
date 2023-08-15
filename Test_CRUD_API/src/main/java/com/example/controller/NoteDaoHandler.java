@@ -9,6 +9,7 @@ import java.util.List;
 public class NoteDaoHandler {
 
     public Note addNote(Note note) {
+
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
@@ -52,10 +53,12 @@ public class NoteDaoHandler {
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Updating note failed, no rows affected.");
+                return null;
             }
 
             System.out.println("note updated");
+
+            // todo: you may need to return updated note not previous note -> you need query
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -74,7 +77,7 @@ public class NoteDaoHandler {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next()) {
-                throw new SQLException("Deleting note failed, no rows affected.");
+                return null;
             }else {
                 note.setId(resultSet.getInt(1));
                 note.setUser_id(resultSet.getInt(2));
@@ -89,21 +92,23 @@ public class NoteDaoHandler {
         }
         return note;
     }
-    public  Note getNoteById(int id) {
-        Note note = new Note();
+    public  Note getNoteById(int id, int userId) {
+        Note note = null;
 
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from \"Note\" where id=?");
+                    "select * from \"Note\" where id=? and user_id = ?");
 
             preparedStatement.setInt(1, id);
+            preparedStatement.setInt(2, userId);
 
             ResultSet resultSet
                     = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                note = new Note();
                 note.setId(resultSet.getInt(1));
                 note.setUser_id(resultSet.getInt(2));
                 note.setTitle(resultSet.getString(3));
@@ -117,7 +122,7 @@ public class NoteDaoHandler {
 
         return note;
     }
-    public List<Note> getAllNotes() {
+    public List<Note> getAllNotes(int userId) {
 
         List<Note> notes = new ArrayList<Note>();
 
@@ -125,7 +130,10 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from \"Note\"");
+                    "select * from \"Note\" where user_id = ?");
+
+            preparedStatement.setInt(1, userId);
+
             ResultSet resultSet
                     = preparedStatement.executeQuery();
 

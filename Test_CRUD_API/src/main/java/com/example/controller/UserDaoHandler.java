@@ -51,7 +51,7 @@ public class UserDaoHandler {
             System.out.println("user updated");
 
             // todo: you may need to return updated user not previous user -> you need query
-            
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
