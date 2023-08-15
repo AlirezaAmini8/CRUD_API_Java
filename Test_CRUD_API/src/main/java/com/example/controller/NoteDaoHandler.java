@@ -99,7 +99,7 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from \"Note\" where id=? and user_id = ?");
+                    "select * from \"Note\" where id = ? and user_id = ?");
 
             preparedStatement.setInt(1, id);
             preparedStatement.setInt(2, userId);

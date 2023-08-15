@@ -41,10 +41,13 @@ public class LabelDaoHandler {
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("updating label failed, no rows affected.");
+                return null;
             }
 
             System.out.println("label updated");
+
+            // todo: you may need to return updated label not previous label -> you need query
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -61,7 +64,7 @@ public class LabelDaoHandler {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next()) {
-                throw new SQLException("Deleting label failed, no rows affected.");
+                return null;
             }else {
                 label.setId(resultSet.getInt(1));
                 label.setUser_id(resultSet.getInt(2));
@@ -73,19 +76,21 @@ public class LabelDaoHandler {
         }
         return label;
     }
-    public Label getLabelById(int id) {
-        Label label = new Label();
+    public Label getLabelById(int id, int userId) {
+        Label label = null;
         try (Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from \"Label\" where id=?");
+                    "select * from \"Label\" where id = ? and user_id = ?");
 
             preparedStatement.setInt(1, id);
+            preparedStatement.setInt(2, userId);
 
             ResultSet resultSet
                     = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                label = new Label();
                 label.setId(resultSet.getInt(1));
                 label.setUser_id(resultSet.getInt(2));
                 label.setContent(resultSet.getString(3));
@@ -95,14 +100,17 @@ public class LabelDaoHandler {
         }
         return label;
     }
-    public List<Label> getAllLabels() {
+    public List<Label> getAllLabels(int userId) {
 
         List<Label> labels = new ArrayList<Label>();
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from \"Label\"");
+                    "select * from \"Label\" where user_id = ?");
+
+            preparedStatement.setInt(1, userId);
+
             ResultSet resultSet
                     = preparedStatement.executeQuery();
 

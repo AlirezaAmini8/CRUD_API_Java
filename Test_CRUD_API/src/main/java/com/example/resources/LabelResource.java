@@ -22,26 +22,33 @@ public class LabelResource {
     ObjectMapper mapper = new ObjectMapper();
 
     @GET
-    @ApiOperation(value = "Return all Labels", notes = "Returns all labels exist in db", response = Label.class )
+    @Path("/user/{userId}")
+    @ApiOperation(value = "Return all Labels of user", notes = "Returns all labels of user with specific id", response = Label.class )
     @ApiResponses({
-            @ApiResponse(code = 200, message = "ok")
+            @ApiResponse(code = 200, message = "ok"),
+            @ApiResponse(code = 404, message = "User not found")
     })
-    public Response getAllLabels() {
-        List<Label> labels = labelDao.getAllLabels();
-        return Response.status(Response.Status.OK)
-                .entity(labels)
-                .build();
+    public Response getAllLabels(@PathParam("userId") int userId) {
+        List<Label> labels = labelDao.getAllLabels(userId);
+        if(!labels.isEmpty()) {
+            return Response.status(Response.Status.OK)
+                    .entity(labels)
+                    .build();
+        }else{
+            return Response.status(Response.Status.NOT_FOUND)
+                    .build();
+        }
     }
 
     @GET
-    @Path("/{id}")
-    @ApiOperation(value = "Return a label", notes = "Returns a label with specific id", response = Label.class )
+    @Path("/note/{id}/user/{userId}")
+    @ApiOperation(value = "Get a label of a user", notes = "Returns a label with specific id for specific user", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "Label not found")
+            @ApiResponse(code = 404, message = "User or Label not found")
     })
-    public Response getLabelById(@PathParam("id") int id) {
-        Label foundedLabel = labelDao.getLabelById(id);
+    public Response getLabelById(@PathParam("id") int id, @PathParam("userId") int userId) {
+        Label foundedLabel = labelDao.getLabelById(id, userId);
         if (foundedLabel != null) {
             return Response.status(Response.Status.OK)
                     .entity(foundedLabel)
@@ -57,14 +64,21 @@ public class LabelResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "create a label", notes = "create a label based on information you inter", response = Label.class)
     @ApiResponses({
-            @ApiResponse(code = 201, message = "created")
+            @ApiResponse(code = 201, message = "created"),
+            @ApiResponse(code = 400, message = "Bad request")
     })
-    public Response createLabel(String input) throws IOException {
-        Label label = mapper.readValue(input, Label.class);
-        Label createdLabel = labelDao.addLabel(label);
-        return Response.status(Response.Status.CREATED)
-                .entity(createdLabel)
-                .build();
+    public Response createLabel(String input) {
+        try {
+            Label label = mapper.readValue(input, Label.class);
+            Label createdLabel = labelDao.addLabel(label);
+            return Response.status(Response.Status.CREATED)
+                    .entity(createdLabel)
+                    .build();
+        }catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid input format for Label")
+                    .build();
+        }
     }
 
     @PUT
@@ -74,17 +88,24 @@ public class LabelResource {
     @ApiOperation(value = "update an existing label", notes = "update a label with specific id and information you give", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "Label not found")
+            @ApiResponse(code = 404, message = "Label not found"),
+            @ApiResponse(code = 400, message = "Bad request")
     })
-    public Response updateLabel(@PathParam("id") int id, String input) throws IOException {
-        Label label = mapper.readValue(input, Label.class);
-        Label updatedLabel = labelDao.updateLabel(id, label);
-        if (updatedLabel != null) {
-            return Response.status(Response.Status.OK)
-                    .entity(updatedLabel)
-                    .build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND)
+    public Response updateLabel(@PathParam("id") int id, String input) {
+        try {
+            Label label = mapper.readValue(input, Label.class);
+            Label updatedLabel = labelDao.updateLabel(id, label);
+            if (updatedLabel != null) {
+                return Response.status(Response.Status.OK)
+                        .entity(updatedLabel)
+                        .build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid input format for Label")
                     .build();
         }
     }
