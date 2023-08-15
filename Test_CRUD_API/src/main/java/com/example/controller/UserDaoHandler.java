@@ -34,8 +34,6 @@ public class UserDaoHandler {
         return user;
     }
     public User updateUser(int id, User user) {
-        User updatedUser = null;
-
         try(Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -45,21 +43,20 @@ public class UserDaoHandler {
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setInt(3, id);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                updatedUser = new User();
-                updatedUser.setId(resultSet.getInt(1));
-                updatedUser.setUsername(resultSet.getString(2));
-                updatedUser.setPassword(resultSet.getString(3));
-                System.out.println("user updated");
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                return null;
             }
 
+            System.out.println("user updated");
+
+            // todo: you may need to return updated user not previous user -> you need query
+            
         }catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return updatedUser;
+        return user;
     }
     public User deleteUser(int id) {
         User user = null;
