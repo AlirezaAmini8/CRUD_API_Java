@@ -34,6 +34,7 @@ public class NoteLabelDaoHandler {
             }
             else {
                 System.out.println("Label doesn't belong to the user of the note.");
+                return null;
             }
         }catch (SQLException e) {
             e.printStackTrace();
@@ -102,7 +103,7 @@ public class NoteLabelDaoHandler {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(!resultSet.next()){
-                throw new SQLException("Deleting note label failed, no rows affected.");
+                return null;
             }else{
                 noteLabel.setNote_id(resultSet.getInt("note_id"));
                 noteLabel.setLabel_id(resultSet.getInt("label_id"));
