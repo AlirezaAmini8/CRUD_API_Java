@@ -46,7 +46,6 @@ public class LabelDaoHandler {
 
             System.out.println("label updated");
 
-            // todo: you may need to return updated label not previous label -> you need query
 
         }catch (SQLException e) {
             e.printStackTrace();

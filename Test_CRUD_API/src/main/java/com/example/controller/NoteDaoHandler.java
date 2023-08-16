@@ -58,7 +58,6 @@ public class NoteDaoHandler {
 
             System.out.println("note updated");
 
-            // todo: you may need to return updated note not previous note -> you need query
         }catch (SQLException e) {
             e.printStackTrace();
         }
