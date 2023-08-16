@@ -65,12 +65,12 @@ public class LabelDaoHandler {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next()) {
                 return null;
-            }else {
-                label.setId(resultSet.getInt(1));
-                label.setUser_id(resultSet.getInt(2));
-                label.setContent(resultSet.getString(3));
-                System.out.printf("label with id = %s deleted \n", id);
             }
+            label.setId(resultSet.getInt(1));
+            label.setUser_id(resultSet.getInt(2));
+            label.setContent(resultSet.getString(3));
+            System.out.printf("label with id = %s deleted \n", id);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }

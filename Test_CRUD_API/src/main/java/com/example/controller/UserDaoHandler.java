@@ -50,8 +50,6 @@ public class UserDaoHandler {
 
             System.out.println("user updated");
 
-            // todo: you may need to return updated user not previous user -> you need query
-
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -59,23 +57,24 @@ public class UserDaoHandler {
         return user;
     }
     public User deleteUser(int id) {
-        User user = null;
+        User user = new User();
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "delete from \"User\" where id =?");
+                    "delete from \"User\" where id = ?");
 
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                user = new User();
-                user.setId(resultSet.getInt(1));
-                user.setUsername(resultSet.getString(2));
-                user.setPassword(resultSet.getString(3));
-                System.out.printf("user with id = %s deleted \n", id);
+            if (!resultSet.next()) {
+                return null;
             }
+
+            user.setId(resultSet.getInt(1));
+            user.setUsername(resultSet.getString(2));
+            user.setPassword(resultSet.getString(3));
+            System.out.printf("user with id = %s deleted \n", id);
 
         }catch (SQLException e) {
             e.printStackTrace();

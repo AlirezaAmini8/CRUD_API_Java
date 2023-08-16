@@ -104,11 +104,11 @@ public class NoteLabelDaoHandler {
 
             if(!resultSet.next()){
                 return null;
-            }else{
-                noteLabel.setNote_id(resultSet.getInt("note_id"));
-                noteLabel.setLabel_id(resultSet.getInt("label_id"));
-                System.out.println("noteLabel deleted");
             }
+            noteLabel.setNote_id(resultSet.getInt("note_id"));
+            noteLabel.setLabel_id(resultSet.getInt("label_id"));
+            System.out.println("noteLabel deleted");
+
         }catch (SQLException e) {
             e.printStackTrace();
         }

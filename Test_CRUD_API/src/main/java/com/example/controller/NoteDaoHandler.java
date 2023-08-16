@@ -78,15 +78,15 @@ public class NoteDaoHandler {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next()) {
                 return null;
-            }else {
-                note.setId(resultSet.getInt(1));
-                note.setUser_id(resultSet.getInt(2));
-                note.setTitle(resultSet.getString(3));
-                note.setContent(resultSet.getString(4));
-                note.setCreated_at(resultSet.getDate(5));
-                note.setModified_at(resultSet.getDate(6));
-                System.out.printf("note with id = %s deleted \n", id);
             }
+            note.setId(resultSet.getInt(1));
+            note.setUser_id(resultSet.getInt(2));
+            note.setTitle(resultSet.getString(3));
+            note.setContent(resultSet.getString(4));
+            note.setCreated_at(resultSet.getDate(5));
+            note.setModified_at(resultSet.getDate(6));
+            System.out.printf("note with id = %s deleted \n", id);
+
         }catch (SQLException e) {
             e.printStackTrace();
         }
