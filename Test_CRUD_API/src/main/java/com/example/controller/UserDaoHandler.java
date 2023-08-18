@@ -71,9 +71,6 @@ public class UserDaoHandler {
                 return null;
             }
 
-            user.setId(resultSet.getInt(1));
-            user.setUsername(resultSet.getString(2));
-            user.setPassword(resultSet.getString(3));
             System.out.printf("user with id = %s deleted \n", id);
 
         }catch (SQLException e) {
