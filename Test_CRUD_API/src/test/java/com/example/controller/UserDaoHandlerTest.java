@@ -14,8 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -56,35 +55,36 @@ public class UserDaoHandlerTest {
 
     @Test
     public void testUpdateUser() throws SQLException {
-        int id = 6;
+        int id = 3;
         User user = new User();
-        user.setUsername("updateduser");
-        user.setPassword("updatedpassword");
+        user.setUsername("farhad");
+        user.setPassword("fawea5225");
 
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
 
         User result = userDaoHandler.updateUser(id, user);
 
         assertNotNull(result);
-        assertEquals("updateduser", result.getUsername());
-        assertEquals("updatedpassword", result.getPassword());
+        assertEquals("farhad", result.getUsername());
+        assertEquals("fawea5225", result.getPassword());
     }
 
     @Test
     public void testDeleteUser() throws SQLException {
-        int id = 5;
-        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        int id = 10;
+
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt(1)).thenReturn(id);
-        when(mockResultSet.getString(2)).thenReturn("deleteduser");
-        when(mockResultSet.getString(3)).thenReturn("deletedpassword");
+        when(mockResultSet.getString(2)).thenReturn("testuser");
+        when(mockResultSet.getString(3)).thenReturn("testpassword");
 
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         User result = userDaoHandler.deleteUser(id);
 
         assertNotNull(result);
-        assertEquals(id, result.getId());
-        assertEquals("deleteduser", result.getUsername());
-        assertEquals("deletedpassword", result.getPassword());
+        assertEquals(0, result.getId());
+        assertNull(result.getUsername());
+        assertNull(result.getPassword());
     }
 
     @Test

@@ -66,11 +66,13 @@ public class UserDaoHandler {
 
             preparedStatement.setInt(1, id);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next()) {
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
                 return null;
             }
-
+            user.setId(0);
+            user.setUsername(null);
+            user.setPassword(null);
             System.out.printf("user with id = %s deleted \n", id);
 
         }catch (SQLException e) {

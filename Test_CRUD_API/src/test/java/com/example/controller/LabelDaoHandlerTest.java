@@ -70,11 +70,11 @@ public class LabelDaoHandlerTest {
     public void testDeleteLabel() throws SQLException {
         int id = 1;
         int user_id = 1;
-        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt(1)).thenReturn(id);
-        when(mockResultSet.getInt(2)).thenReturn(user_id);
-        when(mockResultSet.getString(3)).thenReturn("updated Sport");
+
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
 
         Label result = labelDaoHandler.deleteLabel(id);
 

@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.models.Note;
+
 import com.example.models.NoteLabel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
