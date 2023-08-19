@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.models.Label;
-import com.example.models.Note;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
