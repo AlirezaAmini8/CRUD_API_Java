@@ -12,8 +12,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -39,8 +38,8 @@ public class NoteLabelDaoHandlerTest {
     @Test
     public void testAddNoteLabel() throws SQLException {
         NoteLabel noteLabel = new NoteLabel();
-        noteLabel.setNote_id(1);
-        noteLabel.setLabel_id(1);
+        noteLabel.setNote_id(2);
+        noteLabel.setLabel_id(2);
 
 
         when(mockPreparedStatement.executeUpdate()).thenReturn(1);
@@ -48,15 +47,30 @@ public class NoteLabelDaoHandlerTest {
         NoteLabel result = noteLabelDaoHandler.addNoteLabel(noteLabel);
 
         assertNotNull(result);
-        assertEquals(1, result.getNote_id());
-        assertEquals(1, result.getLabel_id());
+        assertEquals(2, result.getNote_id());
+        assertEquals(2, result.getLabel_id());
+    }
+
+    @Test
+    public void testAddNoteLabelNull() throws SQLException {
+        NoteLabel noteLabel = new NoteLabel();
+        noteLabel.setNote_id(5);
+        noteLabel.setLabel_id(4);
+
+
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
+
+        NoteLabel result = noteLabelDaoHandler.addNoteLabel(noteLabel);
+
+        assertNull(result);
+
     }
 
     @Test
     public void testDeleteNoteLabel() throws SQLException {
-        int note_id = 1;
-        int label_id = 1;
-        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        int note_id = 2;
+        int label_id = 2;
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt(1)).thenReturn(note_id);
         when(mockResultSet.getInt(2)).thenReturn(label_id);
@@ -64,29 +78,27 @@ public class NoteLabelDaoHandlerTest {
         NoteLabel result = noteLabelDaoHandler.deleteNoteLabel(note_id, label_id);
 
         assertNotNull(result);
-        assertEquals(note_id, result.getNote_id());
-        assertEquals(label_id, result.getLabel_id());
 
     }
 
     @Test
     public void testGetNoteLabelsForNote() throws SQLException {
-        int note_id = 1;
+        int note_id = 2;
         List<NoteLabel> noteLabels = new ArrayList<>();
         NoteLabel noteLabel1 = new NoteLabel();
-        noteLabel1.setNote_id(1);
-        noteLabel1.setLabel_id(1);
+        noteLabel1.setNote_id(note_id);
+        noteLabel1.setLabel_id(2);
         noteLabels.add(noteLabel1);
 
         NoteLabel noteLabel2 = new NoteLabel();
-        noteLabel2.setNote_id(1);
-        noteLabel2.setLabel_id(2);
+        noteLabel2.setNote_id(note_id);
+        noteLabel2.setLabel_id(4);
         noteLabels.add(noteLabel2);
 
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, false);
-        when(mockResultSet.getInt(1)).thenReturn(1, 1);
-        when(mockResultSet.getInt(2)).thenReturn(1, 2);
+        when(mockResultSet.getInt(1)).thenReturn(note_id, note_id);
+        when(mockResultSet.getInt(2)).thenReturn(2, 4);
 
         List<NoteLabel> result = noteLabelDaoHandler.getNoteLabelsForNote(note_id);
 
@@ -100,22 +112,22 @@ public class NoteLabelDaoHandlerTest {
 
     @Test
     public void testGetNoteLabelsForLabel() throws SQLException {
-        int label_id = 1;
+        int label_id = 4;
         List<NoteLabel> noteLabels = new ArrayList<>();
         NoteLabel noteLabel1 = new NoteLabel();
-        noteLabel1.setNote_id(1);
-        noteLabel1.setLabel_id(1);
+        noteLabel1.setNote_id(2);
+        noteLabel1.setLabel_id(label_id);
         noteLabels.add(noteLabel1);
 
         NoteLabel noteLabel2 = new NoteLabel();
-        noteLabel2.setNote_id(2);
-        noteLabel2.setLabel_id(1);
+        noteLabel2.setNote_id(1);
+        noteLabel2.setLabel_id(label_id);
         noteLabels.add(noteLabel2);
 
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt(1)).thenReturn(1, 2);
-        when(mockResultSet.getInt(2)).thenReturn(1, 1);
+        when(mockResultSet.getInt(2)).thenReturn(label_id, label_id);
 
         List<NoteLabel> result = noteLabelDaoHandler.getNoteLabelsForLabel(label_id);
 

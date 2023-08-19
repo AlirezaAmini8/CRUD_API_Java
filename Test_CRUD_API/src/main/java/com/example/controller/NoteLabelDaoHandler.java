@@ -100,13 +100,12 @@ public class NoteLabelDaoHandler {
             preparedStatement.setInt(1, noteId);
             preparedStatement.setInt(2, labelId);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+            int affectedRows = preparedStatement.executeUpdate();
 
-            if(!resultSet.next()){
+            if(affectedRows == 0){
                 return null;
             }
-            noteLabel.setNote_id(resultSet.getInt("note_id"));
-            noteLabel.setLabel_id(resultSet.getInt("label_id"));
+
             System.out.println("noteLabel deleted");
 
         }catch (SQLException e) {
