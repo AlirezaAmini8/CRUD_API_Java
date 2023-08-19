@@ -90,7 +90,7 @@ public class UserDaoHandlerTest {
     @Test
     public void testGetUserById() throws SQLException {
         int id = 3;
-        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getInt(1)).thenReturn(id);
         when(mockResultSet.getString(2)).thenReturn("farhad");
