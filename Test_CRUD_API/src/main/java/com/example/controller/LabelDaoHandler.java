@@ -61,13 +61,10 @@ public class LabelDaoHandler {
 
             preparedStatement.setInt(1, id);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next()) {
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
                 return null;
             }
-            label.setId(resultSet.getInt(1));
-            label.setUser_id(resultSet.getInt(2));
-            label.setContent(resultSet.getString(3));
             System.out.printf("label with id = %s deleted \n", id);
 
         }catch (SQLException e) {
@@ -75,15 +72,14 @@ public class LabelDaoHandler {
         }
         return label;
     }
-    public Label getLabelById(int id, int userId) {
+    public Label getLabelById(int id) {
         Label label = null;
         try (Connection connect = DatabaseConnection.getConnection()) {
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from \"Label\" where id = ? and user_id = ?");
+                    "select * from \"Label\" where id = ?");
 
             preparedStatement.setInt(1, id);
-            preparedStatement.setInt(2, userId);
 
             ResultSet resultSet
                     = preparedStatement.executeQuery();

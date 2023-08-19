@@ -41,14 +41,14 @@ public class LabelResource {
     }
 
     @GET
-    @Path("/note/{id}/user/{userId}")
+    @Path("/{id}")
     @ApiOperation(value = "Get a label of a user", notes = "Returns a label with specific id for specific user", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "User or Label not found")
+            @ApiResponse(code = 404, message = "Label not found")
     })
-    public Response getLabelById(@PathParam("id") int id, @PathParam("userId") int userId) {
-        Label foundedLabel = labelDao.getLabelById(id, userId);
+    public Response getLabelById(@PathParam("id") int id) {
+        Label foundedLabel = labelDao.getLabelById(id);
         if (foundedLabel != null) {
             return Response.status(Response.Status.OK)
                     .entity(foundedLabel)
