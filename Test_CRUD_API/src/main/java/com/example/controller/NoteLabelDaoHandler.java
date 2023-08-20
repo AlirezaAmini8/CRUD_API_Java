@@ -1,6 +1,8 @@
 package com.example.controller;
 
 import com.example.models.NoteLabel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoteLabelDaoHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(NoteLabelDaoHandler.class);
     public NoteLabel addNoteLabel(NoteLabel noteLabel) {
         try(Connection connect = DatabaseConnection.getConnection()) {
 
@@ -27,16 +31,18 @@ public class NoteLabelDaoHandler {
 
                 int affectedRows = preparedStatement.executeUpdate();
                 if (affectedRows == 0) {
+                    logger.warn("creating note_label failed, no rows affected.");
                     throw new SQLException("creating note_label failed, no rows affected.");
                 }
 
-                System.out.println("note label inserted");
+                logger.info("note label with note's ID = {} and label's ID = {} inserted.", noteLabel.getNote_id() , noteLabel.getLabel_id());
             }
             else {
-                System.out.println("Label doesn't belong to the user of the note.");
+                logger.warn("Label doesn't belong to the user of the note.");
                 return null;
             }
         }catch (SQLException e) {
+            logger.error("Error adding a note label: {}", e.getMessage());
             e.printStackTrace();
         }
 
@@ -58,9 +64,10 @@ public class NoteLabelDaoHandler {
                 noteLabel.setLabel_id(resultSet.getInt("label_id"));
                 noteLabels.add(noteLabel);
             }
-
+            logger.info("Retrieved all labels for note with id = {} successfully", noteId);
         }
         catch (SQLException e) {
+            logger.error("Error retrieving labels for this note: {}", e.getMessage());
             e.printStackTrace();
         }
         return noteLabels;
@@ -84,8 +91,11 @@ public class NoteLabelDaoHandler {
                 noteLabels.add(noteLabel);
             }
 
+            logger.info("Retrieved all notes for label with id = {} successfully", labelId);
+
         }
         catch (SQLException e) {
+            logger.error("Error retrieving notes for this label: {}", e.getMessage());
             e.printStackTrace();
         }
         return noteLabels;
@@ -103,12 +113,14 @@ public class NoteLabelDaoHandler {
             int affectedRows = preparedStatement.executeUpdate();
 
             if(affectedRows == 0){
+                logger.warn("Note Label with note's ID {} and label's ID {} not found.", noteId, labelId);
                 return null;
             }
 
-            System.out.println("noteLabel deleted");
+            logger.info("Note Label with note's ID {} and label's ID {} deleted.", noteId, labelId);
 
         }catch (SQLException e) {
+            logger.error("Error deleting note label: {}", e.getMessage());
             e.printStackTrace();
         }
         return noteLabel;

@@ -7,6 +7,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -20,6 +22,8 @@ import java.util.List;
 public class NoteLabelResource {
     private NoteLabelDaoHandler noteLabelDao = new NoteLabelDaoHandler();
     ObjectMapper mapper = new ObjectMapper();
+
+    private static final Logger logger = LoggerFactory.getLogger(NoteLabelResource.class);
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -35,15 +39,18 @@ public class NoteLabelResource {
             NoteLabel noteLabel = mapper.readValue(input, NoteLabel.class);
             NoteLabel createdNoteLabel = noteLabelDao.addNoteLabel(noteLabel);
             if(createdNoteLabel != null) {
+                logger.info("NoteLabel created: {}", createdNoteLabel);
                 return Response.status(Response.Status.CREATED)
                         .entity(createdNoteLabel)
                         .build();
             }else{
+                logger.warn("You can't add this label to this note,because their users are different.");
                 return Response.status(Response.Status.FORBIDDEN)
                         .entity("You can't add this label to this note,because their users are different.")
                         .build();
             }
         }catch (IOException e) {
+            logger.error("Invalid input format for NoteLabel: {}", e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid input format for Note Label")
                     .build();
@@ -60,10 +67,12 @@ public class NoteLabelResource {
     public Response getNoteLabelsForNote(@PathParam("noteId") int noteId) {
         List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForNote(noteId);
         if(!noteLabels.isEmpty()){
+            logger.info("Retrieved all labels for note with id = {} successfully", noteId);
             return Response.status(Response.Status.OK)
                     .entity(noteLabels)
                     .build();
         }else{
+            logger.warn("No labels found for this note");
             return Response.status(Response.Status.NOT_FOUND)
                     .build();
         }
@@ -79,10 +88,12 @@ public class NoteLabelResource {
     public Response getNoteLabelsForLabel(@PathParam("labelId") int labelId) {
         List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForLabel(labelId);
         if(!noteLabels.isEmpty()) {
+            logger.info("Retrieved all notes for label with id = {} successfully", labelId);
             return Response.status(Response.Status.OK)
                     .entity(noteLabels)
                     .build();
         }else{
+            logger.warn("This label didn't attach to any note");
             return Response.status(Response.Status.NOT_FOUND)
                     .build();
         }
@@ -98,10 +109,12 @@ public class NoteLabelResource {
     public Response deleteNoteLabel(@PathParam("noteId") int noteId, @PathParam("labelId") int labelId) {
         NoteLabel noteLabel = noteLabelDao.deleteNoteLabel(noteId, labelId);
         if (noteLabel != null) {
+            logger.info("Note Label with note's ID {} and label's ID {} deleted.", noteId, labelId);
             return Response.status(Response.Status.OK)
                     .entity(noteLabel)
                     .build();
         } else {
+            logger.warn("Note Label with note's ID {} and label's ID {} not found.", noteId, labelId);
             return Response.status(Response.Status.NOT_FOUND)
                     .build();
         }
