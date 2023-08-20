@@ -5,7 +5,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.caffinc</groupId>
+    <groupId>com.example</groupId>
     <artifactId>Test_CRUD_API</artifactId>
     <build>
         <plugins>
@@ -15,7 +15,6 @@
                 <version>2.3</version>
                 <configuration>
                     <transformers>
-                        <!-- add Main-Class to manifest file -->
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>com.example.app.App</mainClass>
                         </transformer>
@@ -42,6 +41,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${slf4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j-version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
@@ -91,5 +95,6 @@
         <swagger-version>1.5.3</swagger-version>
         <jersey2-version>2.7</jersey2-version>
         <slf4j-version>1.7.12</slf4j-version>
+        <log4j-version>1.2.17</log4j-version>
     </properties>
 </project>
