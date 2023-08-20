@@ -107,7 +107,7 @@ public class NoteDaoHandlerTest {
         when(mockResultSet.getString(3)).thenReturn("updated reminder");
         when(mockResultSet.getString(4)).thenReturn("This is just updated reminder.");
 
-        Note result = noteDaoHandler.getNoteById(id, user_id);
+        Note result = noteDaoHandler.getNoteById(id);
 
         assertNotNull(result);
         assertEquals(id, result.getId());

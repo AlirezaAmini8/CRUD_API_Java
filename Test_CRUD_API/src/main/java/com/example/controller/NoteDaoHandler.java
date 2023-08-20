@@ -1,6 +1,8 @@
 package com.example.controller;
 
 import com.example.models.Note;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,6 +10,7 @@ import java.util.List;
 
 public class NoteDaoHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserDaoHandler.class);
     public Note addNote(Note note) {
 
         try(Connection connect = DatabaseConnection.getConnection()) {
@@ -27,11 +30,13 @@ public class NoteDaoHandler {
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
+                logger.warn("Creating note failed, no rows affected.");
                 throw new SQLException("Creating note failed, no rows affected.");
             }
 
-            System.out.println("note inserted");
+            logger.info("Note inserted: {}", note.getId());
         }catch (SQLException e) {
+            logger.error("Error adding a note: {}", e.getMessage());
             e.printStackTrace();
         }
 
@@ -53,12 +58,14 @@ public class NoteDaoHandler {
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
+                logger.warn("Note with id = {} not found for update.", id);
                 return null;
             }
 
-            System.out.println("note updated");
+            logger.info("Note updated with id = {}", id);
 
         }catch (SQLException e) {
+            logger.error("Error updating note with id = {}: {}", id, e.getMessage());
             e.printStackTrace();
         }
 
@@ -76,27 +83,28 @@ public class NoteDaoHandler {
 
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
+                logger.warn("Note with id = {} not found for delete.", id);
                 return null;
             }
 
-            System.out.printf("note with id = %s deleted \n", id);
+            logger.info("Note deleted with id = {}", id);
 
         }catch (SQLException e) {
+            logger.error("Error deleting note with id = {}: {}", id, e.getMessage());
             e.printStackTrace();
         }
         return note;
     }
-    public  Note getNoteById(int id, int userId) {
+    public  Note getNoteById(int id) {
         Note note = null;
 
         try(Connection connect = DatabaseConnection.getConnection()) {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "select * from \"Note\" where id = ? and user_id = ?");
+                    "select * from \"Note\" where id = ? ");
 
             preparedStatement.setInt(1, id);
-            preparedStatement.setInt(2, userId);
 
             ResultSet resultSet
                     = preparedStatement.executeQuery();
@@ -110,7 +118,10 @@ public class NoteDaoHandler {
                 note.setCreated_at(resultSet.getDate(5));
                 note.setModified_at(resultSet.getDate(6));
             }
+            logger.info("Retrieved note with ID {}: {}", id, note);
+
         }catch (SQLException e) {
+            logger.error("Error retrieving note with id = {}: {}", id, e.getMessage());
             e.printStackTrace();
         }
 
@@ -142,7 +153,9 @@ public class NoteDaoHandler {
                 // store the values into the list
                 notes.add(note);
             }
+            logger.info("Retrieved all notes with size {} successfully", notes.size());
         }catch (SQLException e) {
+            logger.error("Error retrieving all notes: {}", e.getMessage());
             e.printStackTrace();
         }
 
