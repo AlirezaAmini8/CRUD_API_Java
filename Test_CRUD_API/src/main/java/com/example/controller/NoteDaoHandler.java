@@ -10,7 +10,7 @@ import java.util.List;
 
 public class NoteDaoHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserDaoHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(NoteDaoHandler.class);
     public Note addNote(Note note) {
 
         try(Connection connect = DatabaseConnection.getConnection()) {
@@ -34,7 +34,7 @@ public class NoteDaoHandler {
                 throw new SQLException("Creating note failed, no rows affected.");
             }
 
-            logger.info("Note inserted: {}", note.getId());
+            logger.info("Note inserted: {}", note.getTitle());
         }catch (SQLException e) {
             logger.error("Error adding a note: {}", e.getMessage());
             e.printStackTrace();
