@@ -16,6 +16,9 @@ public class LabelDaoHandler {
     private static final Logger logger = LoggerFactory.getLogger(LabelDaoHandler.class);
     public Label addLabel(Label label) {
         try (Connection connect = DatabaseConnection.getConnection()){
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
                     "insert into \"Label\"(user_id,content) values (?,?)");
@@ -39,7 +42,9 @@ public class LabelDaoHandler {
     }
     public Label updateLabel(int id, Label label) {
         try(Connection connect = DatabaseConnection.getConnection()) {
-
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
                     "update \"Label\" set content=? where id=?");
@@ -65,6 +70,9 @@ public class LabelDaoHandler {
     public Label deleteLabel(int id) {
         Label label = new Label();
         try (Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
                     "delete from \"Label\" where id =?");
@@ -88,6 +96,9 @@ public class LabelDaoHandler {
     public Label getLabelById(int id) {
         Label label = null;
         try (Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
                     "select * from \"Label\" where id = ?");
@@ -116,6 +127,9 @@ public class LabelDaoHandler {
 
         List<Label> labels = new ArrayList<Label>();
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(

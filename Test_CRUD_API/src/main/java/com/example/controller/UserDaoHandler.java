@@ -18,7 +18,9 @@ public class UserDaoHandler {
     public User addUser(User user) {
 
         try(Connection connect = DatabaseConnection.getConnection()) {
-
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
                     "insert into \"User\"(username,password) values (?,?)");
@@ -42,6 +44,10 @@ public class UserDaoHandler {
     }
     public User updateUser(int id, User user) {
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
+
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
                     "update \"User\" set username=?,password=? where id=?");
@@ -68,6 +74,9 @@ public class UserDaoHandler {
     public User deleteUser(int id) {
         User user = new User();
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -95,6 +104,9 @@ public class UserDaoHandler {
         User user = null;
 
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -124,6 +136,9 @@ public class UserDaoHandler {
         List<User> users = new ArrayList<User>();
 
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(

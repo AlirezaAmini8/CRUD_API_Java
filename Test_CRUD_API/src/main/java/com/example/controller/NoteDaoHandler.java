@@ -14,6 +14,9 @@ public class NoteDaoHandler {
     public Note addNote(Note note) {
 
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -44,6 +47,9 @@ public class NoteDaoHandler {
     }
     public Note updateNote(int id, Note note) {
         try (Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -74,6 +80,9 @@ public class NoteDaoHandler {
     public Note deleteNote(int id) {
         Note note = new Note();
         try (Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -99,6 +108,9 @@ public class NoteDaoHandler {
         Note note = null;
 
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
@@ -132,6 +144,9 @@ public class NoteDaoHandler {
         List<Note> notes = new ArrayList<Note>();
 
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(

@@ -15,13 +15,20 @@ public class DatabaseConnection {
     private static final String DB_PASSWORD = "4271";
 
     public static Connection getConnection() throws SQLException {
+        Connection connection = null;
         try {
-            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            logger.info("Database connection established successfully.");
-            return connection;
+            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            if (connection != null) {
+                logger.info("Database connection established successfully.");
+            } else {
+                logger.error("Failed to establish a database connection.");
+                throw new SQLException("Failed to establish a database connection.");
+            }
         } catch (SQLException e) {
             logger.error("Failed to establish a database connection: {}", e.getMessage());
             throw e;
         }
+        return connection;
     }
+
 }

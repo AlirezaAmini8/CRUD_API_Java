@@ -1,1 +1,3 @@
-2023-08-20 11:42:48 [qtp1610525991-16] INFO  UserResource - Retrieved all users successfully.
+2023-08-20 13:39:30 [qtp1164440413-26] INFO  UserResource - Retrieved all users successfully.
+2023-08-20 13:40:08 [qtp1164440413-26] INFO  NoteResource - Retrieved note with ID 2
+2023-08-20 13:40:47 [qtp1164440413-24] INFO  LabelResource - Retrieved label with ID 2

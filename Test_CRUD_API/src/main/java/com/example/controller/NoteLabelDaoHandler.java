@@ -16,7 +16,9 @@ public class NoteLabelDaoHandler {
     private static final Logger logger = LoggerFactory.getLogger(NoteLabelDaoHandler.class);
     public NoteLabel addNoteLabel(NoteLabel noteLabel) {
         try(Connection connect = DatabaseConnection.getConnection()) {
-
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
             int noteUserId = getNoteUserId(noteLabel.getNote_id(), connect);
 
             int labelUserId = getLabelUserId(noteLabel.getLabel_id(), connect);
@@ -51,6 +53,9 @@ public class NoteLabelDaoHandler {
     public List<NoteLabel> getNoteLabelsForNote(int noteId) {
         List<NoteLabel> noteLabels = new ArrayList<>();
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
 
             PreparedStatement preparedStatement = connect.prepareStatement(
                     "SELECT * FROM \"Note_Label\" WHERE note_id = ?");
@@ -77,7 +82,9 @@ public class NoteLabelDaoHandler {
         List<NoteLabel> noteLabels = new ArrayList<>();
 
         try(Connection connect = DatabaseConnection.getConnection()) {
-
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
             PreparedStatement preparedStatement = connect.prepareStatement(
                     "SELECT * FROM \"Note_Label\" WHERE label_id = ?");
 
@@ -105,6 +112,10 @@ public class NoteLabelDaoHandler {
         NoteLabel noteLabel = new NoteLabel();
 
         try(Connection connect = DatabaseConnection.getConnection()) {
+            if (connect == null) {
+                throw new SQLException("Failed to establish a database connection.");
+            }
+
             PreparedStatement preparedStatement = connect.prepareStatement(
                     "DELETE FROM \"Note_Label\" WHERE note_id = ? AND label_id = ?");
             preparedStatement.setInt(1, noteId);
