@@ -14,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 @Api(value = "Note Operations", description = "Web Services for notes")
@@ -29,18 +30,26 @@ public class NoteResource {
     @ApiOperation(value = "Get all notes of user", notes = "Returns all notes of user with specific id", response = Note.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "User not found")
+            @ApiResponse(code = 404, message = "User not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getAllNotes(@PathParam("userId") int userId) {
-        List<Note> notes = noteDao.getAllNotes(userId);
-        if (!notes.isEmpty()) {
-            logger.info("Retrieved all notes successfully.");
-            return Response.status(Response.Status.OK)
-                    .entity(notes)
-                    .build();
-        }else{
-            logger.warn("No notes found for this user");
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            List<Note> notes = noteDao.getAllNotes(userId);
+            if (!notes.isEmpty()) {
+                logger.info("Retrieved all notes successfully.");
+                return Response.status(Response.Status.OK)
+                        .entity(notes)
+                        .build();
+            } else {
+                logger.warn("No notes found for this user");
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error retrieving notes: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving notes: " + e.getMessage())
                     .build();
         }
     }
@@ -50,18 +59,26 @@ public class NoteResource {
     @ApiOperation(value = "Get a note of a user", notes = "Returns a note with specific id for specific user", response = Note.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "Note not found")
+            @ApiResponse(code = 404, message = "Note not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getNoteById(@PathParam("id") int id) {
-        Note foundedNote = noteDao.getNoteById(id);
-        if (foundedNote != null) {
-            logger.info("Retrieved note with ID {}", id);
-            return Response.status(Response.Status.OK)
-                    .entity(foundedNote)
-                    .build();
-        } else {
-            logger.warn("Note with ID {} not found", id);
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            Note foundedNote = noteDao.getNoteById(id);
+            if (foundedNote != null) {
+                logger.info("Retrieved note with ID {}", id);
+                return Response.status(Response.Status.OK)
+                        .entity(foundedNote)
+                        .build();
+            } else {
+                logger.warn("Note with ID {} not found", id);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error retrieving note: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving note: " + e.getMessage())
                     .build();
         }
     }
@@ -72,20 +89,34 @@ public class NoteResource {
     @ApiOperation(value = "create a note", notes = "create a note based on information you inter", response = Note.class)
     @ApiResponses({
             @ApiResponse(code = 201, message = "created"),
-            @ApiResponse(code = 400, message = "Bad request")
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response createNote(String input) {
         try {
             Note note = mapper.readValue(input, Note.class);
             Note createdNote = noteDao.addNote(note);
-            logger.info("Note created: {}", createdNote);
-            return Response.status(Response.Status.CREATED)
-                    .entity(createdNote)
-                    .build();
+
+            if(createdNote != null) {
+                logger.info("Note created: {}", createdNote);
+                return Response.status(Response.Status.CREATED)
+                        .entity(createdNote)
+                        .build();
+            }else {
+                logger.warn("Failed to add note.");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("Failed to add note.")
+                        .build();
+            }
         }catch (IOException e) {
             logger.error("Invalid input format for Note: {}", e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid input format for Note")
+                    .build();
+        }catch (SQLException e){
+            logger.error("Error creating note: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error creating note: " + e.getMessage())
                     .build();
         }
     }
@@ -98,7 +129,8 @@ public class NoteResource {
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
             @ApiResponse(code = 404, message = "Note not found"),
-            @ApiResponse(code = 400, message = "Bad request")
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response updateNote(@PathParam("id") int id, String input) {
         try {
@@ -119,6 +151,11 @@ public class NoteResource {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid input format for Note")
                     .build();
+        }catch (SQLException e) {
+            logger.error("Error updating note: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error updating note: " + e.getMessage())
+                    .build();
         }
     }
 
@@ -127,18 +164,25 @@ public class NoteResource {
     @ApiOperation(value = "delete a note", notes = "Deleting a note with specific id", response = Note.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "Note not found")
+            @ApiResponse(code = 404, message = "Note not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response deleteNote(@PathParam("id") int id) {
-        Note note = noteDao.deleteNote(id);
-        if (note != null) {
-            logger.info("Note with ID {} deleted.", id);
-            return Response.status(Response.Status.OK)
-                    .entity(note)
-                    .build();
-        } else {
-            logger.warn("Note with ID {} not found for delete", id);
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            Note note = noteDao.deleteNote(id);
+            if (note != null) {
+                logger.info("Note with ID {} deleted.", id);
+                return Response.status(Response.Status.OK)
+                        .build();
+            } else {
+                logger.warn("Note with ID {} not found for delete", id);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error deleting note: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting note: " + e.getMessage())
                     .build();
         }
     }

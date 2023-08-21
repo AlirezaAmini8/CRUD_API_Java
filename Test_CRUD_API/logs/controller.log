@@ -1,12 +1,15 @@
-2023-08-21 16:25:56 [qtp1164440413-19] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 16:25:56 [qtp1164440413-19] ERROR UserDaoHandler - Error retrieving all users: ERROR: relation "x" does not exist
-  Position: 15
-2023-08-21 16:26:05 [qtp1164440413-16] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 16:26:05 [qtp1164440413-16] ERROR UserDaoHandler - Error deleting user with id = 4: ERROR: relation "x" does not exist
+2023-08-21 16:55:25 [qtp1164440413-25] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:55:25 [qtp1164440413-25] ERROR NoteDaoHandler - Error adding a note: ERROR: relation "x" does not exist
   Position: 13
-2023-08-21 16:26:14 [qtp1164440413-18] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 16:26:14 [qtp1164440413-18] ERROR UserDaoHandler - Error retrieving user with id = 2: ERROR: relation "x" does not exist
+2023-08-21 16:55:31 [qtp1164440413-28] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:55:31 [qtp1164440413-28] ERROR NoteDaoHandler - Error retrieving note with id = 3: ERROR: relation "x" does not exist
   Position: 15
-2023-08-21 16:26:28 [qtp1164440413-18] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 16:26:28 [qtp1164440413-18] ERROR UserDaoHandler - Error updating user with id = 7: ERROR: relation "x" does not exist
+2023-08-21 16:55:36 [qtp1164440413-27] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:55:36 [qtp1164440413-27] ERROR NoteDaoHandler - Error retrieving all notes: ERROR: relation "x" does not exist
+  Position: 15
+2023-08-21 16:55:40 [qtp1164440413-24] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:55:40 [qtp1164440413-24] ERROR NoteDaoHandler - Error deleting note with id = 3: ERROR: relation "x" does not exist
+  Position: 13
+2023-08-21 16:55:46 [qtp1164440413-21] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:55:46 [qtp1164440413-21] ERROR NoteDaoHandler - Error updating note with id = 3: ERROR: relation "x" does not exist
   Position: 8

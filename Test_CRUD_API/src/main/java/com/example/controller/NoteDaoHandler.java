@@ -11,7 +11,7 @@ import java.util.List;
 public class NoteDaoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(NoteDaoHandler.class);
-    public Note addNote(Note note) {
+    public Note addNote(Note note) throws SQLException {
 
         try(Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
@@ -20,7 +20,8 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "insert into \"Note\"(user_id,title,content,created_at,modified_at) values (?,?,?,?,?)");
+                    "insert into \"Note\"(user_id,title,content,created_at,modified_at) values (?,?,?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setInt(1, note.getUser_id());
             preparedStatement.setString(2, note.getTitle());
@@ -37,15 +38,23 @@ public class NoteDaoHandler {
                 throw new SQLException("Creating note failed, no rows affected.");
             }
 
-            logger.info("Note inserted: {}", note.getTitle());
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                note.setId(generatedKeys.getInt(1));
+            } else {
+                logger.warn("Failed to retrieve the generated ID for the note.");
+            }
+
+            logger.info("Note inserted with ID {}", note.getTitle());
+
         }catch (SQLException e) {
             logger.error("Error adding a note: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return note;
     }
-    public Note updateNote(int id, Note note) {
+    public Note updateNote(int id, Note note) throws SQLException {
         try (Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
@@ -67,17 +76,17 @@ public class NoteDaoHandler {
                 logger.warn("Note with id = {} not found for update.", id);
                 return null;
             }
-
+            note.setId(id);
             logger.info("Note updated with id = {}", id);
 
         }catch (SQLException e) {
             logger.error("Error updating note with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return note;
     }
-    public Note deleteNote(int id) {
+    public Note deleteNote(int id) throws SQLException {
         Note note = new Note();
         try (Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
@@ -100,11 +109,11 @@ public class NoteDaoHandler {
 
         }catch (SQLException e) {
             logger.error("Error deleting note with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return note;
     }
-    public  Note getNoteById(int id) {
+    public  Note getNoteById(int id) throws SQLException {
         Note note = null;
 
         try(Connection connect = DatabaseConnection.getConnection()) {
@@ -134,12 +143,12 @@ public class NoteDaoHandler {
 
         }catch (SQLException e) {
             logger.error("Error retrieving note with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return note;
     }
-    public List<Note> getAllNotes(int userId) {
+    public List<Note> getAllNotes(int userId) throws SQLException {
 
         List<Note> notes = new ArrayList<Note>();
 
@@ -171,7 +180,7 @@ public class NoteDaoHandler {
             logger.info("Retrieved all notes with size {} successfully", notes.size());
         }catch (SQLException e) {
             logger.error("Error retrieving all notes: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return notes;

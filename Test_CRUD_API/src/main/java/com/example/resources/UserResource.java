@@ -47,9 +47,9 @@ public class UserResource {
                         .build();
             }
         }catch (SQLException e) {
-            logger.error("Error creating user: {}", e.getMessage());
+            logger.error("Error retrieving users: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating user: " + e.getMessage())
+                    .entity("Error retrieving users: " + e.getMessage())
                     .build();
         }
     }
@@ -76,9 +76,9 @@ public class UserResource {
                         .build();
             }
         }catch (SQLException e) {
-            logger.error("Error creating user: {}", e.getMessage());
+            logger.error("Error retrieving user: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating user: " + e.getMessage())
+                    .entity("Error retrieving user: " + e.getMessage())
                     .build();
         }
     }
@@ -155,7 +155,7 @@ public class UserResource {
                     .entity("Invalid input format for User")
                     .build();
         }catch (SQLException e) {
-            logger.error("Error creating user: {}", e.getMessage());
+            logger.error("Error updating user: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error updating user: " + e.getMessage())
                     .build();
@@ -183,9 +183,9 @@ public class UserResource {
                         .build();
             }
         }catch (SQLException e) {
-            logger.error("Error creating user: {}", e.getMessage());
+            logger.error("Error deleting user: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating user: " + e.getMessage())
+                    .entity("Error deleting user: " + e.getMessage())
                     .build();
         }
 
