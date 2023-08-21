@@ -14,7 +14,7 @@ import java.util.List;
 public class NoteLabelDaoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(NoteLabelDaoHandler.class);
-    public NoteLabel addNoteLabel(NoteLabel noteLabel) {
+    public NoteLabel addNoteLabel(NoteLabel noteLabel) throws SQLException {
         try(Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
@@ -45,12 +45,12 @@ public class NoteLabelDaoHandler {
             }
         }catch (SQLException e) {
             logger.error("Error adding a note label: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return noteLabel;
     }
-    public List<NoteLabel> getNoteLabelsForNote(int noteId) {
+    public List<NoteLabel> getNoteLabelsForNote(int noteId) throws SQLException {
         List<NoteLabel> noteLabels = new ArrayList<>();
         try(Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
@@ -73,12 +73,12 @@ public class NoteLabelDaoHandler {
         }
         catch (SQLException e) {
             logger.error("Error retrieving labels for this note: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return noteLabels;
     }
 
-    public List<NoteLabel> getNoteLabelsForLabel(int labelId) {
+    public List<NoteLabel> getNoteLabelsForLabel(int labelId) throws SQLException {
         List<NoteLabel> noteLabels = new ArrayList<>();
 
         try(Connection connect = DatabaseConnection.getConnection()) {
@@ -103,12 +103,12 @@ public class NoteLabelDaoHandler {
         }
         catch (SQLException e) {
             logger.error("Error retrieving notes for this label: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return noteLabels;
     }
 
-    public NoteLabel deleteNoteLabel(int noteId, int labelId) {
+    public NoteLabel deleteNoteLabel(int noteId, int labelId) throws SQLException {
         NoteLabel noteLabel = new NoteLabel();
 
         try(Connection connect = DatabaseConnection.getConnection()) {
@@ -132,7 +132,7 @@ public class NoteLabelDaoHandler {
 
         }catch (SQLException e) {
             logger.error("Error deleting note label: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return noteLabel;
     }

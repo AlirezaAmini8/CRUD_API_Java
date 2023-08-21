@@ -14,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -55,6 +56,11 @@ public class NoteLabelResource {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid input format for Note Label")
                     .build();
+        }catch (SQLException e) {
+            logger.error("Error creating noteLabel: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error creating noteLabel: " + e.getMessage())
+                    .build();
         }
     }
 
@@ -67,15 +73,22 @@ public class NoteLabelResource {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getNoteLabelsForNote(@PathParam("noteId") int noteId) {
-        List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForNote(noteId);
-        if(!noteLabels.isEmpty()){
-            logger.info("Retrieved all labels for note with id = {} successfully", noteId);
-            return Response.status(Response.Status.OK)
-                    .entity(noteLabels)
-                    .build();
-        }else{
-            logger.warn("No labels found for this note");
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForNote(noteId);
+            if (!noteLabels.isEmpty()) {
+                logger.info("Retrieved all labels for note with id = {} successfully", noteId);
+                return Response.status(Response.Status.OK)
+                        .entity(noteLabels)
+                        .build();
+            } else {
+                logger.warn("No labels found for this note");
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error retrieving labels for note: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving labels for note: " + e.getMessage())
                     .build();
         }
     }
@@ -89,15 +102,22 @@ public class NoteLabelResource {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getNoteLabelsForLabel(@PathParam("labelId") int labelId) {
-        List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForLabel(labelId);
-        if(!noteLabels.isEmpty()) {
-            logger.info("Retrieved all notes for label with id = {} successfully", labelId);
-            return Response.status(Response.Status.OK)
-                    .entity(noteLabels)
-                    .build();
-        }else{
-            logger.warn("This label didn't attach to any note");
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForLabel(labelId);
+            if (!noteLabels.isEmpty()) {
+                logger.info("Retrieved all notes for label with id = {} successfully", labelId);
+                return Response.status(Response.Status.OK)
+                        .entity(noteLabels)
+                        .build();
+            } else {
+                logger.warn("This label didn't attach to any note");
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error retrieving notes for label: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving notes for label: " + e.getMessage())
                     .build();
         }
     }
@@ -111,14 +131,21 @@ public class NoteLabelResource {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response deleteNoteLabel(@PathParam("noteId") int noteId, @PathParam("labelId") int labelId) {
-        NoteLabel noteLabel = noteLabelDao.deleteNoteLabel(noteId, labelId);
-        if (noteLabel != null) {
-            logger.info("Note Label with note's ID {} and label's ID {} deleted.", noteId, labelId);
-            return Response.status(Response.Status.OK)
-                    .build();
-        } else {
-            logger.warn("Note Label with note's ID {} and label's ID {} not found.", noteId, labelId);
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            NoteLabel noteLabel = noteLabelDao.deleteNoteLabel(noteId, labelId);
+            if (noteLabel != null) {
+                logger.info("Note Label with note's ID {} and label's ID {} deleted.", noteId, labelId);
+                return Response.status(Response.Status.OK)
+                        .build();
+            } else {
+                logger.warn("Note Label with note's ID {} and label's ID {} not found.", noteId, labelId);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error deleting noteLabel: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting noteLabel: " + e.getMessage())
                     .build();
         }
     }
