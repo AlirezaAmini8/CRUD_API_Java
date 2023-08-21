@@ -45,7 +45,7 @@ public class NoteDaoHandler {
                 logger.warn("Failed to retrieve the generated ID for the note.");
             }
 
-            logger.info("Note inserted with ID {}", note.getTitle());
+            logger.info("Note inserted with ID {}", note.getId());
 
         }catch (SQLException e) {
             logger.error("Error adding a note: {}", e.getMessage());

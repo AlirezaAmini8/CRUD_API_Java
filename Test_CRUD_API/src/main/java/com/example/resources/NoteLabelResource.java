@@ -32,7 +32,8 @@ public class NoteLabelResource {
     @ApiResponses({
             @ApiResponse(code = 201, message = "created"),
             @ApiResponse(code = 403, message = "not access"),
-            @ApiResponse(code = 400, message = "bad request")
+            @ApiResponse(code = 400, message = "bad request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response createNoteLabel(String input) {
         try {
@@ -62,7 +63,8 @@ public class NoteLabelResource {
     @ApiOperation(value = "Get note labels for a specific note", notes = "Returns all notelabels for a note which are exist in db", response = NoteLabel.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "not find")
+            @ApiResponse(code = 404, message = "not find"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getNoteLabelsForNote(@PathParam("noteId") int noteId) {
         List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForNote(noteId);
@@ -83,7 +85,8 @@ public class NoteLabelResource {
     @ApiOperation(value = "Get note labels for a specific label", notes = "Returns all notelabels for a label which are exist in db", response = NoteLabel.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "not find")
+            @ApiResponse(code = 404, message = "not find"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getNoteLabelsForLabel(@PathParam("labelId") int labelId) {
         List<NoteLabel> noteLabels = noteLabelDao.getNoteLabelsForLabel(labelId);
@@ -104,14 +107,14 @@ public class NoteLabelResource {
     @ApiOperation(value = "Delete a note label", notes = "Deleting a note label with specific id", response = NoteLabel.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "note label not found")
+            @ApiResponse(code = 404, message = "note label not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response deleteNoteLabel(@PathParam("noteId") int noteId, @PathParam("labelId") int labelId) {
         NoteLabel noteLabel = noteLabelDao.deleteNoteLabel(noteId, labelId);
         if (noteLabel != null) {
             logger.info("Note Label with note's ID {} and label's ID {} deleted.", noteId, labelId);
             return Response.status(Response.Status.OK)
-                    .entity(noteLabel)
                     .build();
         } else {
             logger.warn("Note Label with note's ID {} and label's ID {} not found.", noteId, labelId);

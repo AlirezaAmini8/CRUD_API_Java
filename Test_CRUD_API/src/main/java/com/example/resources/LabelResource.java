@@ -14,6 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -30,18 +31,26 @@ public class LabelResource {
     @ApiOperation(value = "Return all Labels of user", notes = "Returns all labels of user with specific id", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "User not found")
+            @ApiResponse(code = 404, message = "User not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getAllLabels(@PathParam("userId") int userId) {
-        List<Label> labels = labelDao.getAllLabels(userId);
-        if(!labels.isEmpty()) {
-            logger.info("Retrieved all labels successfully.");
-            return Response.status(Response.Status.OK)
-                    .entity(labels)
-                    .build();
-        }else{
-            logger.warn("No labels found for this user");
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            List<Label> labels = labelDao.getAllLabels(userId);
+            if (!labels.isEmpty()) {
+                logger.info("Retrieved all labels successfully.");
+                return Response.status(Response.Status.OK)
+                        .entity(labels)
+                        .build();
+            } else {
+                logger.warn("No labels found for this user");
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error retrieving labels: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving labels: " + e.getMessage())
                     .build();
         }
     }
@@ -51,18 +60,26 @@ public class LabelResource {
     @ApiOperation(value = "Get a label of a user", notes = "Returns a label with specific id for specific user", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "Label not found")
+            @ApiResponse(code = 404, message = "Label not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getLabelById(@PathParam("id") int id) {
-        Label foundedLabel = labelDao.getLabelById(id);
-        if (foundedLabel != null) {
-            logger.info("Retrieved label with ID {}", id);
-            return Response.status(Response.Status.OK)
-                    .entity(foundedLabel)
-                    .build();
-        } else {
-            logger.warn("Label with ID {} not found", id);
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            Label foundedLabel = labelDao.getLabelById(id);
+            if (foundedLabel != null) {
+                logger.info("Retrieved label with ID {}", id);
+                return Response.status(Response.Status.OK)
+                        .entity(foundedLabel)
+                        .build();
+            } else {
+                logger.warn("Label with ID {} not found", id);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error retrieving label: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving label: " + e.getMessage())
                     .build();
         }
     }
@@ -73,23 +90,35 @@ public class LabelResource {
     @ApiOperation(value = "create a label", notes = "create a label based on information you inter", response = Label.class)
     @ApiResponses({
             @ApiResponse(code = 201, message = "created"),
-            @ApiResponse(code = 400, message = "Bad request")
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response createLabel(String input) {
         try {
             Label label = mapper.readValue(input, Label.class);
             Label createdLabel = labelDao.addLabel(label);
 
-            logger.info("Label created: {}", createdLabel);
-
-            return Response.status(Response.Status.CREATED)
-                    .entity(createdLabel)
-                    .build();
+            if(label != null) {
+                logger.info("Label created: {}", createdLabel);
+                return Response.status(Response.Status.CREATED)
+                        .entity(createdLabel)
+                        .build();
+            } else {
+                logger.warn("Failed to add label.");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity("Failed to add label.")
+                        .build();
+            }
         }catch (IOException e) {
             logger.error("Invalid input format for Label: {}", e.getMessage());
 
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid input format for Label")
+                    .build();
+        }catch (SQLException e){
+            logger.error("Error creating label: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error creating label: " + e.getMessage())
                     .build();
         }
     }
@@ -102,7 +131,8 @@ public class LabelResource {
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
             @ApiResponse(code = 404, message = "Label not found"),
-            @ApiResponse(code = 400, message = "Bad request")
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response updateLabel(@PathParam("id") int id, String input) {
         try {
@@ -123,6 +153,11 @@ public class LabelResource {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid input format for Label")
                     .build();
+        }catch (SQLException e) {
+            logger.error("Error updating label: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error updating label: " + e.getMessage())
+                    .build();
         }
     }
 
@@ -131,18 +166,25 @@ public class LabelResource {
     @ApiOperation(value = "delete a label", notes = "Deleting a label with specific id", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "Label not found")
+            @ApiResponse(code = 404, message = "Label not found"),
+            @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response deleteLabel(@PathParam("id") int id) {
-        Label label = labelDao.deleteLabel(id);
-        if (label != null) {
-            logger.info("Label with ID {} deleted.", id);
-            return Response.status(Response.Status.OK)
-                    .entity(label)
-                    .build();
-        } else {
-            logger.warn("Label with ID {} not found for delete", id);
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            Label label = labelDao.deleteLabel(id);
+            if (label != null) {
+                logger.info("Label with ID {} deleted.", id);
+                return Response.status(Response.Status.OK)
+                        .build();
+            } else {
+                logger.warn("Label with ID {} not found for delete", id);
+                return Response.status(Response.Status.NOT_FOUND)
+                        .build();
+            }
+        }catch (SQLException e) {
+            logger.error("Error deleting label: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting label: " + e.getMessage())
                     .build();
         }
     }

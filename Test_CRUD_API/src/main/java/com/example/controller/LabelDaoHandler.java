@@ -4,24 +4,22 @@ import com.example.models.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LabelDaoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LabelDaoHandler.class);
-    public Label addLabel(Label label) {
+    public Label addLabel(Label label) throws SQLException {
         try (Connection connect = DatabaseConnection.getConnection()){
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
             }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "insert into \"Label\"(user_id,content) values (?,?)");
+                    "insert into \"Label\"(user_id,content) values (?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setInt(1, label.getUser_id());
             preparedStatement.setString(2, label.getContent());
@@ -32,15 +30,23 @@ public class LabelDaoHandler {
                 throw new SQLException("creating label failed, no rows affected.");
             }
 
-            logger.info("Label inserted: {}", label.getContent());
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                label.setId(generatedKeys.getInt(1));
+            } else {
+                logger.warn("Failed to retrieve the generated ID for the label.");
+            }
+
+            logger.info("Label inserted: {}", label.getId());
 
         }catch (SQLException e) {
             logger.error("Error adding a label: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
+
         }
         return label;
     }
-    public Label updateLabel(int id, Label label) {
+    public Label updateLabel(int id, Label label) throws SQLException {
         try(Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
@@ -57,17 +63,18 @@ public class LabelDaoHandler {
                 logger.warn("Label with id = {} not found for update.", id);
                 return null;
             }
+            label.setId(id);
 
             logger.info("Label updated with id = {}", id);
 
 
         }catch (SQLException e) {
             logger.error("Error updating label with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return label;
     }
-    public Label deleteLabel(int id) {
+    public Label deleteLabel(int id) throws SQLException {
         Label label = new Label();
         try (Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
@@ -89,11 +96,11 @@ public class LabelDaoHandler {
 
         }catch (SQLException e) {
             logger.error("Error deleting note with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return label;
     }
-    public Label getLabelById(int id) {
+    public Label getLabelById(int id) throws SQLException {
         Label label = null;
         try (Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
@@ -119,11 +126,11 @@ public class LabelDaoHandler {
 
         }catch (SQLException e) {
             logger.error("Error retrieving label with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return label;
     }
-    public List<Label> getAllLabels(int userId) {
+    public List<Label> getAllLabels(int userId) throws SQLException {
 
         List<Label> labels = new ArrayList<Label>();
         try(Connection connect = DatabaseConnection.getConnection()) {
@@ -151,7 +158,7 @@ public class LabelDaoHandler {
             logger.info("Retrieved all labels with size {} successfully", labels.size());
         }catch (SQLException e) {
             logger.error("Error retrieving all labels: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return labels;

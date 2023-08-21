@@ -38,7 +38,7 @@ public class UserDaoHandler {
                 logger.warn("Failed to retrieve the generated ID for the user.");
             }
 
-            logger.info("User inserted with ID {}: {}", user.getId(), user.getUsername());
+            logger.info("User inserted with ID {}", user.getId());
 
         }catch (SQLException e) {
             logger.error("Error adding a user: {}", e.getMessage());
