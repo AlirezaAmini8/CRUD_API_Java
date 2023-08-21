@@ -4,10 +4,7 @@ import com.example.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,15 +12,15 @@ public class UserDaoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDaoHandler.class);
 
-    public User addUser(User user) {
-
+    public User addUser(User user) throws SQLException {
         try(Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
             }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "insert into \"User\"(username,password) values (?,?)");
+                    "insert into \"User\"(username,password) values (?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
@@ -34,15 +31,23 @@ public class UserDaoHandler {
                 throw new SQLException("creating user failed, no rows affected.");
             }
 
-            logger.info("User inserted: {}", user.getUsername());
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                user.setId(generatedKeys.getInt(1));
+            } else {
+                logger.warn("Failed to retrieve the generated ID for the user.");
+            }
+
+            logger.info("User inserted with ID {}: {}", user.getId(), user.getUsername());
+
         }catch (SQLException e) {
             logger.error("Error adding a user: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return user;
     }
-    public User updateUser(int id, User user) {
+    public User updateUser(int id, User user) throws SQLException {
         try(Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
@@ -62,16 +67,17 @@ public class UserDaoHandler {
                 return null;
             }
 
+            user.setId(id);
             logger.info("User updated with id = {}", id);
 
         }catch (SQLException e) {
             logger.error("Error updating user with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return user;
     }
-    public User deleteUser(int id) {
+    public User deleteUser(int id) throws SQLException {
         User user = new User();
         try(Connection connect = DatabaseConnection.getConnection()) {
             if (connect == null) {
@@ -89,18 +95,16 @@ public class UserDaoHandler {
                 logger.warn("User with id = {} not found for delete.", id);
                 return null;
             }
-            user.setId(0);
-            user.setUsername(null);
-            user.setPassword(null);
+
             logger.info("User deleted with id = {}", id);
 
         }catch (SQLException e) {
             logger.error("Error deleting user with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
         return user;
     }
-    public User getUserById(int id) {
+    public User getUserById(int id) throws SQLException {
         User user = null;
 
         try(Connection connect = DatabaseConnection.getConnection()) {
@@ -126,12 +130,12 @@ public class UserDaoHandler {
 
         }catch (SQLException e) {
             logger.error("Error retrieving user with id = {}: {}", id, e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return user;
     }
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws SQLException {
 
         List<User> users = new ArrayList<User>();
 
@@ -158,7 +162,7 @@ public class UserDaoHandler {
 
         }catch (SQLException e) {
             logger.error("Error retrieving all users: {}", e.getMessage());
-            e.printStackTrace();
+            throw e;
         }
 
         return users;

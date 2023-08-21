@@ -1,3 +1,8 @@
-2023-08-20 13:39:30 [qtp1164440413-26] INFO  UserResource - Retrieved all users successfully.
-2023-08-20 13:40:08 [qtp1164440413-26] INFO  NoteResource - Retrieved note with ID 2
-2023-08-20 13:40:47 [qtp1164440413-24] INFO  LabelResource - Retrieved label with ID 2
+2023-08-21 16:25:56 [qtp1164440413-19] ERROR UserResource - Error creating user: ERROR: relation "x" does not exist
+  Position: 15
+2023-08-21 16:26:05 [qtp1164440413-16] ERROR UserResource - Error creating user: ERROR: relation "x" does not exist
+  Position: 13
+2023-08-21 16:26:14 [qtp1164440413-18] ERROR UserResource - Error creating user: ERROR: relation "x" does not exist
+  Position: 15
+2023-08-21 16:26:28 [qtp1164440413-18] ERROR UserResource - Error creating user: ERROR: relation "x" does not exist
+  Position: 8

@@ -1,6 +1,12 @@
-2023-08-20 13:39:30 [qtp1164440413-26] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-20 13:39:30 [qtp1164440413-26] INFO  UserDaoHandler - Retrieved all users with size 3 successfully
-2023-08-20 13:40:08 [qtp1164440413-26] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-20 13:40:08 [qtp1164440413-26] INFO  NoteDaoHandler - Retrieved note with ID 2: com.example.models.Note@4fc1a67
-2023-08-20 13:40:47 [qtp1164440413-24] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-20 13:40:47 [qtp1164440413-24] INFO  LabelDaoHandler - Retrieved label with ID 2: com.example.models.Label@1b12e33c
+2023-08-21 16:25:56 [qtp1164440413-19] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:25:56 [qtp1164440413-19] ERROR UserDaoHandler - Error retrieving all users: ERROR: relation "x" does not exist
+  Position: 15
+2023-08-21 16:26:05 [qtp1164440413-16] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:26:05 [qtp1164440413-16] ERROR UserDaoHandler - Error deleting user with id = 4: ERROR: relation "x" does not exist
+  Position: 13
+2023-08-21 16:26:14 [qtp1164440413-18] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:26:14 [qtp1164440413-18] ERROR UserDaoHandler - Error retrieving user with id = 2: ERROR: relation "x" does not exist
+  Position: 15
+2023-08-21 16:26:28 [qtp1164440413-18] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-21 16:26:28 [qtp1164440413-18] ERROR UserDaoHandler - Error updating user with id = 7: ERROR: relation "x" does not exist
+  Position: 8

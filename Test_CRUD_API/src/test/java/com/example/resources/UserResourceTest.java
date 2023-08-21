@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testGetAllUsers() {
+    public void testGetAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
         users.add(new User());
         when(mockUserDaoHandler.getAllUsers()).thenReturn(users);
@@ -45,7 +46,7 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testGetUserById() {
+    public void testGetUserById() throws SQLException {
         int userId = 1;
         User user = new User();
         user.setId(userId);
@@ -58,7 +59,7 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testCreateUser() throws IOException {
+    public void testCreateUser() throws IOException, SQLException {
         User user = new User();
         user.setUsername("testuser");
         user.setPassword("testpassword");
@@ -73,7 +74,7 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testUpdateUser() throws IOException {
+    public void testUpdateUser() throws IOException, SQLException {
         int userId = 1;
         User user = new User();
         user.setUsername("updateduser");
@@ -89,7 +90,7 @@ public class UserResourceTest {
     }
 
     @Test
-    public void testDeleteUser() {
+    public void testDeleteUser() throws SQLException {
         int userId = 1;
         User user = new User();
         user.setId(userId);
