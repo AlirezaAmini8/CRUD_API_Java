@@ -62,7 +62,9 @@ public class NoteDaoHandler {
 
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "update \"Note\" set title=?,content=?,modified_at=? where id=?");
+                    "update \"Note\" set title=?,content=?,modified_at=? where id=?",
+                    Statement.RETURN_GENERATED_KEYS);
+
 
             preparedStatement.setString(1, note.getTitle());
             preparedStatement.setString(2, note.getContent());
@@ -76,7 +78,19 @@ public class NoteDaoHandler {
                 logger.warn("Note with id = {} not found for update.", id);
                 return null;
             }
-            note.setId(id);
+
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                note.setId(generatedKeys.getInt(1));
+                note.setUser_id(generatedKeys.getInt(2));
+                note.setTitle(generatedKeys.getString(3));
+                note.setContent(generatedKeys.getString(4));
+                note.setCreated_at(generatedKeys.getDate(5));
+                note.setModified_at(generatedKeys.getDate(6));
+            } else {
+                logger.warn("Failed to retrieve the generated values for the note.");
+            }
+
             logger.info("Note updated with id = {}", id);
 
         }catch (SQLException e) {

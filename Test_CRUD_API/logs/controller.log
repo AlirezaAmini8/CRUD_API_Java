@@ -1,3 +1,2 @@
-2023-08-22 09:07:09 [qtp1164440413-17] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-22 09:07:09 [qtp1164440413-17] ERROR UserDaoHandler - Error retrieving user with id = 1: ERROR: relation "x" does not exist
-  Position: 15
+2023-08-22 09:52:46 [qtp899644639-16] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-22 09:53:04 [qtp899644639-16] ERROR NoteDaoHandler - Error updating note with id = 2: ResultSet not positioned properly, perhaps you need to call next.

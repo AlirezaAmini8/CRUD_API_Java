@@ -53,7 +53,8 @@ public class LabelDaoHandler {
             }
             PreparedStatement preparedStatement
                     = connect.prepareStatement(
-                    "update \"Label\" set content=? where id=?");
+                    "update \"Label\" set content=? where id=?",
+                    Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setString(1, label.getContent());
             preparedStatement.setInt(2, id);
@@ -63,7 +64,15 @@ public class LabelDaoHandler {
                 logger.warn("Label with id = {} not found for update.", id);
                 return null;
             }
-            label.setId(id);
+
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                label.setId(generatedKeys.getInt(1));
+                label.setUser_id(generatedKeys.getInt(2));
+                label.setContent(generatedKeys.getString(3));
+            } else {
+                logger.warn("Failed to retrieve the generated values for the label.");
+            }
 
             logger.info("Label updated with id = {}", id);
 
