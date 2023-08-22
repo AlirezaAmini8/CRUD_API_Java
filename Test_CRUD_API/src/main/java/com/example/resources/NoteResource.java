@@ -55,7 +55,7 @@ public class NoteResource {
     }
 
     @GET
-    @Path("/note/{id}")
+    @Path("/{id}")
     @ApiOperation(value = "Get a note of a user", notes = "Returns a note with specific id for specific user", response = Note.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),

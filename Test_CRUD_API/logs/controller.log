@@ -1,15 +1,3 @@
-2023-08-21 17:16:16 [qtp1164440413-20] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 17:16:16 [qtp1164440413-20] ERROR LabelDaoHandler - Error adding a label: ERROR: relation "x" does not exist
-  Position: 13
-2023-08-21 17:16:27 [qtp1164440413-17] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 17:16:27 [qtp1164440413-17] ERROR LabelDaoHandler - Error retrieving all labels: ERROR: relation "x" does not exist
+2023-08-22 09:07:09 [qtp1164440413-17] INFO  DatabaseConnection - Database connection established successfully.
+2023-08-22 09:07:09 [qtp1164440413-17] ERROR UserDaoHandler - Error retrieving user with id = 1: ERROR: relation "x" does not exist
   Position: 15
-2023-08-21 17:16:32 [qtp1164440413-14] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 17:16:32 [qtp1164440413-14] ERROR LabelDaoHandler - Error deleting note with id = 3: ERROR: relation "x" does not exist
-  Position: 13
-2023-08-21 17:16:42 [qtp1164440413-20] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 17:16:42 [qtp1164440413-20] ERROR LabelDaoHandler - Error retrieving label with id = 3: ERROR: relation "x" does not exist
-  Position: 15
-2023-08-21 17:16:51 [qtp1164440413-20] INFO  DatabaseConnection - Database connection established successfully.
-2023-08-21 17:16:51 [qtp1164440413-20] ERROR LabelDaoHandler - Error updating label with id = 3: ERROR: relation "x" does not exist
-  Position: 8
