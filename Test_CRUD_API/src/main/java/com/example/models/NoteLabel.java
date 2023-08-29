@@ -1,6 +1,7 @@
 package com.example.models;
 
-public class NoteLabel {private int note_id;
+public class NoteLabel {
+    private int note_id;
     private int label_id;
 
     public int getNote_id() {

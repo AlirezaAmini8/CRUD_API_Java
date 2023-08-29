@@ -10,6 +10,15 @@ public class Note {
     private Date created_at;
     private Date modified_at;
 
+    public Note(int id, int user_id, String title, String content, Date created_at, Date modified_at) {
+        this.id = id;
+        this.user_id = user_id;
+        this.title = title;
+        this.content = content;
+        this.created_at = created_at;
+        this.modified_at = modified_at;
+    }
+
     public int getId() {
         return id;
     }

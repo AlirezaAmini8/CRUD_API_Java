@@ -1,6 +1,7 @@
-package com.example.resources;
+package com.example.controller;
 
-import com.example.controller.LabelDaoHandler;
+import com.example.models.NoteLabel;
+import com.example.repository.LabelDao;
 import com.example.models.Label;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
@@ -14,6 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,10 +23,15 @@ import java.util.List;
 @Path("/labels")
 @Api(value = "Label Operations", description = "Web Services for labels")
 public class LabelResource {
-    private LabelDaoHandler labelDao = new LabelDaoHandler();
-    ObjectMapper mapper = new ObjectMapper();
+    private final LabelDao labelDao;
+    private final ObjectMapper mapper;
 
     private static final Logger logger = LoggerFactory.getLogger(LabelResource.class);
+
+    public LabelResource(LabelDao labelDao, ObjectMapper mapper) {
+        this.labelDao = labelDao;
+        this.mapper = mapper;
+    }
 
     @GET
     @Path("/user/{userId}")
@@ -56,16 +63,17 @@ public class LabelResource {
     }
 
     @GET
-    @Path("/{id}")
+    @Path("/{id}/user/{userId}")
     @ApiOperation(value = "Get a label of a user", notes = "Returns a label with specific id for specific user", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
             @ApiResponse(code = 404, message = "Label not found"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 403, message = "not access")
     })
-    public Response getLabelById(@PathParam("id") int id) {
+    public Response getLabelById(@PathParam("id") int id,@PathParam("userId") int userId) {
         try {
-            Label foundedLabel = labelDao.getLabelById(id);
+            Label foundedLabel = labelDao.getLabelById(id, userId);
             if (foundedLabel != null) {
                 logger.info("Retrieved label with ID {}", id);
                 return Response.status(Response.Status.OK)
@@ -76,7 +84,12 @@ public class LabelResource {
                 return Response.status(Response.Status.NOT_FOUND)
                         .build();
             }
-        }catch (SQLException e) {
+        }catch (AccessDeniedException e){
+            logger.error("Access denied: {}", e.getMessage());
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("Access denied: " + e.getMessage())
+                    .build();
+        } catch (SQLException e) {
             logger.error("Error retrieving label: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving label: " + e.getMessage())
@@ -162,29 +175,69 @@ public class LabelResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{id}/user/{userId}")
     @ApiOperation(value = "delete a label", notes = "Deleting a label with specific id", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
             @ApiResponse(code = 404, message = "Label not found"),
-            @ApiResponse(code = 500, message = "Internal Server Error")
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 403, message = "not access")
     })
-    public Response deleteLabel(@PathParam("id") int id) {
+    public Response deleteLabel(@PathParam("id") int id, @PathParam("userId") int userId) {
         try {
-            Label label = labelDao.deleteLabel(id);
-            if (label != null) {
-                logger.info("Label with ID {} deleted.", id);
+            labelDao.deleteLabel(id, userId);
+
+            logger.info("Label with ID {} deleted.", id);
+            return Response.status(Response.Status.OK)
+                    .build();
+
+        }catch (AccessDeniedException e){
+            logger.error("Access denied: {}", e.getMessage());
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("Access denied: " + e.getMessage())
+                    .build();
+        }catch(SQLException e) {
+            logger.error("Error deleting label: {}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error deleting label: " + e.getMessage())
+                    .build();
+        }catch (NotFoundException e){
+            logger.error("Label with ID {} not found for delete", id);
+            return Response.status(Response.Status.NOT_FOUND)
+                    .build();
+        }
+    }
+    @GET
+    @Path("/{labelId}/notes/user/{userId}")
+    @ApiOperation(value = "Get notes of a specific label", notes = "Returns all notes of a label which attached to those notes", response = NoteLabel.class )
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "ok"),
+            @ApiResponse(code = 404, message = "not find"),
+            @ApiResponse(code = 500, message = "Internal Server Error"),
+            @ApiResponse(code = 403, message = "not access")
+    })
+    public Response getNotes(@PathParam("labelId") int labelId, @PathParam("userId") int userId) {
+        try {
+            List<NoteLabel> noteLabels = labelDao.getNotes(labelId, userId);
+            if (!noteLabels.isEmpty()) {
+                logger.info("Retrieved all notes for label with id = {} successfully", labelId);
                 return Response.status(Response.Status.OK)
+                        .entity(noteLabels)
                         .build();
             } else {
-                logger.warn("Label with ID {} not found for delete", id);
+                logger.warn("This label didn't attach to any note");
                 return Response.status(Response.Status.NOT_FOUND)
                         .build();
             }
         }catch (SQLException e) {
-            logger.error("Error deleting label: {}", e.getMessage());
+            logger.error("Error retrieving notes for label: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error deleting label: " + e.getMessage())
+                    .entity("Error retrieving notes for label: " + e.getMessage())
+                    .build();
+        }catch (AccessDeniedException e) {
+            logger.error("Access denied: {}", e.getMessage());
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("Access denied: " + e.getMessage())
                     .build();
         }
     }

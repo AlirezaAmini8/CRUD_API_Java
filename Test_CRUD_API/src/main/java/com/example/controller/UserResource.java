@@ -1,6 +1,6 @@
-package com.example.resources;
+package com.example.controller;
 
-import com.example.controller.UserDaoHandler;
+import com.example.repository.UserDao;
 import com.example.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
@@ -20,10 +20,15 @@ import java.util.List;
 @Path("/users")
 @Api(value = "User Operations", description = "Web Services for users")
 public class UserResource {
-    private UserDaoHandler userDao = new UserDaoHandler();
-    ObjectMapper mapper = new ObjectMapper();
+    private final UserDao userDao;
+    private final ObjectMapper mapper;
 
     private static final Logger logger = LoggerFactory.getLogger(UserResource.class);
+
+    public UserResource(UserDao userDao, ObjectMapper mapper) {
+        this.userDao = userDao;
+        this.mapper = mapper;
+    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -172,20 +177,20 @@ public class UserResource {
     })
     public Response deleteUser(@PathParam("id") int id) {
         try{
-            User user = userDao.deleteUser(id);
-            if (user != null) {
-                logger.info("User with ID {} deleted.", id);
-                return Response.status(Response.Status.OK)
-                        .build();
-            } else {
-                logger.warn("User with ID {} not found for delete", id);
-                return Response.status(Response.Status.NOT_FOUND)
-                        .build();
-            }
+            userDao.deleteUser(id);
+
+            logger.info("User with ID {} deleted.", id);
+            return Response.status(Response.Status.OK)
+                    .build();
+
         }catch (SQLException e) {
             logger.error("Error deleting user: {}", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error deleting user: " + e.getMessage())
+                    .build();
+        }catch (NotFoundException e){
+            logger.error("User with ID {} not found for delete", id);
+            return Response.status(Response.Status.NOT_FOUND)
                     .build();
         }
 

@@ -1,19 +1,33 @@
-package com.example.controller;
+package com.example.repository;
 
+import com.example.config.IDatabaseConnection;
 import com.example.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.NotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDaoHandler {
+public class UserDaoHandler implements UserDao{
 
     private static final Logger logger = LoggerFactory.getLogger(UserDaoHandler.class);
+    private final IDatabaseConnection databaseConnection;
+
+    private static UserDaoHandler instance;
+    public UserDaoHandler(IDatabaseConnection databaseConnection) {
+        this.databaseConnection = databaseConnection;
+    }
+
+    public static synchronized UserDaoHandler getInstance(IDatabaseConnection databaseConnection){
+        if(instance == null)
+            instance = new UserDaoHandler(databaseConnection);
+        return instance;
+    }
 
     public User addUser(User user) throws SQLException {
-        try(Connection connect = DatabaseConnection.getConnection()) {
+        try(Connection connect = databaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
             }
@@ -47,8 +61,9 @@ public class UserDaoHandler {
 
         return user;
     }
+
     public User updateUser(int id, User user) throws SQLException {
-        try(Connection connect = DatabaseConnection.getConnection()) {
+        try(Connection connect = databaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
             }
@@ -77,9 +92,9 @@ public class UserDaoHandler {
 
         return user;
     }
-    public User deleteUser(int id) throws SQLException {
-        User user = new User();
-        try(Connection connect = DatabaseConnection.getConnection()) {
+
+    public void deleteUser(int id) throws SQLException {
+        try(Connection connect = databaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
             }
@@ -93,7 +108,7 @@ public class UserDaoHandler {
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
                 logger.warn("User with id = {} not found for delete.", id);
-                return null;
+                throw new NotFoundException("User with id = " + id  + " not found for delete.");
             }
 
             logger.info("User deleted with id = {}", id);
@@ -101,13 +116,15 @@ public class UserDaoHandler {
         }catch (SQLException e) {
             logger.error("Error deleting user with id = {}: {}", id, e.getMessage());
             throw e;
+        }catch (NotFoundException e){
+            logger.error("user with id = {} not found", id);
+            throw e;
         }
-        return user;
     }
     public User getUserById(int id) throws SQLException {
         User user = null;
 
-        try(Connection connect = DatabaseConnection.getConnection()) {
+        try(Connection connect = databaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
             }
@@ -121,10 +138,10 @@ public class UserDaoHandler {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                user = new User();
-                user.setId(resultSet.getInt(1));
-                user.setUsername(resultSet.getString(2));
-                user.setPassword(resultSet.getString(3));
+                user = new User(resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3)
+                );
             }
             logger.info("Retrieved user with ID {}: {}", id, user);
 
@@ -135,11 +152,12 @@ public class UserDaoHandler {
 
         return user;
     }
+
     public List<User> getAllUsers() throws SQLException {
 
         List<User> users = new ArrayList<User>();
 
-        try(Connection connect = DatabaseConnection.getConnection()) {
+        try(Connection connect = databaseConnection.getConnection()) {
             if (connect == null) {
                 throw new SQLException("Failed to establish a database connection.");
             }
@@ -151,10 +169,10 @@ public class UserDaoHandler {
                     = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getInt(1));
-                user.setUsername(resultSet.getString(2));
-                user.setPassword(resultSet.getString(3));
+                User user = new User(resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3)
+                );
                 // store the values into the list
                 users.add(user);
             }

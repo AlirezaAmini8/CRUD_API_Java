@@ -5,6 +5,12 @@ public class Label {
     private int user_id;
     private String content;
 
+    public Label(int id, int user_id, String content) {
+        this.id = id;
+        this.user_id = user_id;
+        this.content = content;
+    }
+
     public int getId() {
         return id;
     }
