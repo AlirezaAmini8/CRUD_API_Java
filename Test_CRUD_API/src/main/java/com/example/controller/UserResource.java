@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class UserResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Return all users", notes = "Returns all users exist in db", response = User.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
@@ -60,6 +62,8 @@ public class UserResource {
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     @ApiOperation(value = "Return a user", notes = "Returns a user with specific id", response = User.class )
     @ApiResponses({
@@ -97,7 +101,7 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Bad request."),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public Response createUser(String input) {
+    public Response createUser(@JsonDeserialize(as = User.class) String input) {
         try {
             User user = mapper.readValue(input, User.class);
             User createdUser = userDao.addUser(user);
@@ -137,7 +141,7 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public Response updateUser(@PathParam("id") int id, String input) {
+    public Response updateUser(@PathParam("id") int id, @JsonDeserialize(as = User.class) String input) {
 
         try {
             User user = mapper.readValue(input, User.class);
@@ -168,6 +172,8 @@ public class UserResource {
     }
 
     @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     @ApiOperation(value = "delete a user", notes = "Deleting a user with specific id", response = User.class )
     @ApiResponses({

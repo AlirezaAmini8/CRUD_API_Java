@@ -33,6 +33,8 @@ public class NoteResource {
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/user/{userId}")
     @ApiOperation(value = "Get all notes of user", notes = "Returns all notes of user with specific id", response = Note.class )
     @ApiResponses({
@@ -62,6 +64,8 @@ public class NoteResource {
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/user/{userId}")
     @ApiOperation(value = "Get a note of a user", notes = "Returns a note with specific id for specific user", response = Note.class )
     @ApiResponses({
@@ -173,6 +177,8 @@ public class NoteResource {
     }
 
     @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{id}/user/{userId}")
     @ApiOperation(value = "delete a note", notes = "Deleting a note with specific id", response = Note.class )
     @ApiResponses({
@@ -246,6 +252,8 @@ public class NoteResource {
     }
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{noteId}/labels/user/{userId}")
     @ApiOperation(value = "Get labels for a specific note", notes = "Returns all labels for a note which are to this note", response = NoteLabel.class )
     @ApiResponses({
@@ -281,6 +289,8 @@ public class NoteResource {
     }
 
     @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{noteId}/label/{labelId}/user/{userId}")
     @ApiOperation(value = "Delete a label from note", notes = "Deleting a label with specific id from a note", response = NoteLabel.class )
     @ApiResponses({

@@ -294,9 +294,9 @@ public class NoteDaoHandler implements NoteDao{
 
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                NoteLabel noteLabel = new NoteLabel();
-                noteLabel.setNote_id(resultSet.getInt("note_id"));
-                noteLabel.setLabel_id(resultSet.getInt("label_id"));
+                NoteLabel noteLabel = new NoteLabel(resultSet.getInt("note_id"),
+                        resultSet.getInt("label_id")
+                );
                 noteLabels.add(noteLabel);
             }
             logger.info("Retrieved all labels for note with id = {} successfully", noteId);

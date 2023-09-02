@@ -1,5 +1,8 @@
 package com.example.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class User {
     private int id;
 
@@ -7,7 +10,9 @@ public class User {
 
     private String password;
 
-    public User(int id, String username, String password) {
+    public User(int id,
+                String username,
+                String password) {
         this.id = id;
         this.username = username;
         this.password = password;
