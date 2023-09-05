@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javassist.NotFoundException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -40,7 +41,7 @@ public class LabelResource {
     @ApiOperation(value = "Return all Labels of user", notes = "Returns all labels of user with specific id", response = Label.class )
     @ApiResponses({
             @ApiResponse(code = 200, message = "ok"),
-            @ApiResponse(code = 404, message = "User not found"),
+            @ApiResponse(code = 404, message = "Label not found"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     public Response getAllLabels(@PathParam("userId") int userId) {

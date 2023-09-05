@@ -3,7 +3,7 @@ package com.example.repository;
 import com.example.models.Note;
 import com.example.models.NoteLabel;
 
-import javax.ws.rs.NotFoundException;
+import javassist.NotFoundException;
 import java.nio.file.AccessDeniedException;
 import java.sql.SQLException;
 import java.util.List;

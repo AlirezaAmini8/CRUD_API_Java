@@ -10,7 +10,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.ws.rs.NotFoundException;
+import javassist.NotFoundException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
@@ -23,11 +23,13 @@ import static org.junit.Assert.assertEquals;
 
 public class LabelResourceTest extends JerseyTest {
 
-    private static final LabelDao mockLabelDao = Mockito.mock(LabelDao.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private LabelDao mockLabelDao;
+    private ObjectMapper objectMapper;
 
     @Override
     protected Application configure() {
+        mockLabelDao = Mockito.mock(LabelDao.class);
+        objectMapper = new ObjectMapper();
         return new ResourceConfig()
                 .packages("com.example.controller")
                 .register(new LabelResource(mockLabelDao, objectMapper));
@@ -40,7 +42,7 @@ public class LabelResourceTest extends JerseyTest {
         labels.add(new Label(1, userId, "Label1"));
         labels.add(new Label(2, userId, "Label2"));
 
-        Mockito.when(mockLabelDao.getAllLabels(userId)).thenReturn(labels);
+        Mockito.when(mockLabelDao.getAllLabels(Mockito.eq(userId))).thenReturn(labels);
 
         Response response = target("/labels/user/" + userId).request().get();
 
@@ -75,7 +77,7 @@ public class LabelResourceTest extends JerseyTest {
         int labelId = 1;
         Label label = new Label(labelId, userId, "Label1");
 
-        Mockito.when(mockLabelDao.getLabelById(labelId, userId)).thenReturn(label);
+        Mockito.when(mockLabelDao.getLabelById(Mockito.eq(labelId), Mockito.eq(userId))).thenReturn(label);
 
         Response response = target("/labels/" + labelId + "/user/" + userId).request().get();
 
@@ -88,7 +90,7 @@ public class LabelResourceTest extends JerseyTest {
     public void testGetLabelByIdNotFound() throws SQLException, AccessDeniedException {
         int userId = 1;
         int labelId = 1;
-        Mockito.when(mockLabelDao.getLabelById(labelId, userId)).thenReturn(null);
+        Mockito.when(mockLabelDao.getLabelById(Mockito.eq(labelId), Mockito.eq(userId))).thenReturn(null);
 
         Response response = target("/labels/" + labelId + "/user/" + userId).request().get();
 
@@ -127,13 +129,12 @@ public class LabelResourceTest extends JerseyTest {
 
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        Label responseLabel = response.readEntity(Label.class);
-        assertEquals(label, responseLabel);
+        assertEquals(inputJson, response.readEntity(String.class));
     }
 
     @Test
     public void testCreateLabelWithInvalidInput() {
-        String invalidInput = "{}";
+        String invalidInput = "wrong input";
 
         Response response = target("/labels").request().post(Entity.json(invalidInput));
 
@@ -145,7 +146,7 @@ public class LabelResourceTest extends JerseyTest {
         int userId = 1;
         Label label = new Label(1, userId, "Label1");
 
-        Mockito.doThrow(SQLException.class).when(mockLabelDao).addLabel(label);
+        Mockito.doThrow(SQLException.class).when(mockLabelDao).addLabel(Mockito.any(Label.class));
 
         Response response = target("/labels").request().post(Entity.json(objectMapper.writeValueAsString(label)));
 
@@ -159,14 +160,13 @@ public class LabelResourceTest extends JerseyTest {
         Label label = new Label(labelId, userId, "UpdatedLabel");
         String inputJson = objectMapper.writeValueAsString(label);
 
-        Mockito.when(mockLabelDao.updateLabel(labelId, label)).thenReturn(label);
+        Mockito.when(mockLabelDao.updateLabel(Mockito.eq(labelId), Mockito.any(Label.class))).thenReturn(label);
 
         Response response = target("/labels/" + labelId).request().put(Entity.json(inputJson));
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        Label responseLabel = response.readEntity(Label.class);
-        assertEquals(label, responseLabel);
+        assertEquals(inputJson, response.readEntity(String.class));
     }
 
     @Test
@@ -176,7 +176,7 @@ public class LabelResourceTest extends JerseyTest {
         Label label = new Label(labelId, userId, "UpdatedLabel");
         String inputJson = objectMapper.writeValueAsString(label);
 
-        Mockito.when(mockLabelDao.updateLabel(labelId, label)).thenReturn(null);
+        Mockito.when(mockLabelDao.updateLabel(Mockito.eq(labelId), Mockito.any(Label.class))).thenReturn(null);
 
         Response response = target("/labels/" + labelId).request().put(Entity.json(inputJson));
 
@@ -186,7 +186,7 @@ public class LabelResourceTest extends JerseyTest {
     @Test
     public void testUpdateLabelInvalidInput() {
         int labelId = 1;
-        String invalidInput = "{}";
+        String invalidInput = "wrong input";
 
         Response response = target("/labels/" + labelId).request().put(Entity.json(invalidInput));
 
@@ -200,7 +200,7 @@ public class LabelResourceTest extends JerseyTest {
         Label label = new Label(labelId, userId, "UpdatedLabel");
         String inputJson = objectMapper.writeValueAsString(label);
 
-        Mockito.doThrow(SQLException.class).when(mockLabelDao).updateLabel(labelId, label);
+        Mockito.doThrow(SQLException.class).when(mockLabelDao).updateLabel(Mockito.eq(labelId), Mockito.any(Label.class));
 
         Response response = target("/labels/" + labelId).request().put(Entity.json(inputJson));
 
@@ -218,7 +218,7 @@ public class LabelResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteLabelNotFound() throws SQLException, AccessDeniedException {
+    public void testDeleteLabelNotFound() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int labelId = 1;
         Mockito.doThrow(NotFoundException.class).when(mockLabelDao).deleteLabel(labelId, userId);
@@ -229,7 +229,7 @@ public class LabelResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteLabelAccessError() throws SQLException, AccessDeniedException {
+    public void testDeleteLabelAccessError() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int labelId = 1;
 
@@ -240,7 +240,7 @@ public class LabelResourceTest extends JerseyTest {
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
     }
     @Test
-    public void testDeleteLabelSQLException() throws SQLException, AccessDeniedException {
+    public void testDeleteLabelSQLException() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int labelId = 1;
 
@@ -259,7 +259,7 @@ public class LabelResourceTest extends JerseyTest {
         noteLabels.add(new NoteLabel(1, labelId));
         noteLabels.add(new NoteLabel(2, labelId));
 
-        Mockito.when(mockLabelDao.getNotes(labelId, userId)).thenReturn(noteLabels);
+        Mockito.when(mockLabelDao.getNotes(Mockito.eq(labelId), Mockito.eq(userId))).thenReturn(noteLabels);
 
         Response response = target("/labels/" + labelId + "/notes/user/" + userId).request().get();
 

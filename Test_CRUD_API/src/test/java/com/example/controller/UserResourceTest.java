@@ -9,7 +9,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import javax.ws.rs.NotFoundException;
+import javassist.NotFoundException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
@@ -21,19 +21,17 @@ import static org.junit.Assert.assertEquals;
 
 public class UserResourceTest extends JerseyTest {
 
+    private UserDao mockUserDao;
 
-    private static final UserDao mockUserDao = Mockito.mock(UserDao.class);
-    private final ObjectMapper objectMapper;
-
-    public UserResourceTest() {
-        this.objectMapper = new ObjectMapper();
-    }
+    private ObjectMapper mockObjectMapper;
 
     @Override
     protected Application configure() {
+        mockUserDao = Mockito.mock(UserDao.class);
+        mockObjectMapper = new ObjectMapper();
         return new ResourceConfig()
                 .packages("com.example.controller")
-                .register(new UserResource(mockUserDao, objectMapper));
+                .register(new UserResource(mockUserDao, mockObjectMapper));
     }
     @Test
     public void testGetAllUsers() throws SQLException, JsonProcessingException {
@@ -48,7 +46,7 @@ public class UserResourceTest extends JerseyTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        assertEquals(objectMapper.writeValueAsString(users), response.readEntity(String.class));
+        assertEquals(mockObjectMapper.writeValueAsString(users), response.readEntity(String.class));
     }
 
     @Test
@@ -80,7 +78,7 @@ public class UserResourceTest extends JerseyTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        assertEquals(objectMapper.writeValueAsString(user), response.readEntity(String.class));
+        assertEquals(mockObjectMapper.writeValueAsString(user), response.readEntity(String.class));
     }
 
 
@@ -107,7 +105,7 @@ public class UserResourceTest extends JerseyTest {
     @Test
     public void testCreateUser() throws SQLException, JsonProcessingException {
         User user = new User(1, "User1", "password1");
-        String inputJson = objectMapper.writeValueAsString(user);
+        String inputJson = mockObjectMapper.writeValueAsString(user);
 
         Mockito.when(mockUserDao.addUser(Mockito.any(User.class))).thenReturn(user);
 
@@ -115,15 +113,14 @@ public class UserResourceTest extends JerseyTest {
 
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        User responseUser = response.readEntity(User.class);
-        assertEquals(user, responseUser);
+        assertEquals(inputJson, response.readEntity(String.class));
     }
 
     @Test
     public void testCreateUserWithInvalidInput() {
-        String invalidInput = "{}";
+        String invalidInput = "wrong input";
 
-        Response response = target("/users").request().post(javax.ws.rs.client.Entity.json(invalidInput));
+        Response response = target("/users").request().post(Entity.json(invalidInput));
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -135,7 +132,7 @@ public class UserResourceTest extends JerseyTest {
 
         Mockito.doThrow(SQLException.class).when(mockUserDao).addUser(user);
 
-        Response response = target("/users").request().post(Entity.json(objectMapper.writeValueAsString(user)));
+        Response response = target("/users").request().post(Entity.json(mockObjectMapper.writeValueAsString(user)));
 
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
     }
@@ -144,23 +141,22 @@ public class UserResourceTest extends JerseyTest {
     public void testUpdateUser() throws SQLException, JsonProcessingException {
         int userId = 1;
         User user = new User(userId, "UpdatedUser", "updatedPassword");
-        String inputJson = objectMapper.writeValueAsString(user);
+        String inputJson = mockObjectMapper.writeValueAsString(user);
 
-        Mockito.when(mockUserDao.updateUser(userId, user)).thenReturn(user);
+        Mockito.when(mockUserDao.updateUser(Mockito.eq(userId), Mockito.any(User.class))).thenReturn(user);
 
         Response response = target("/users/" + userId).request().put(Entity.json(inputJson));
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        User responseUser = response.readEntity(User.class);
-        assertEquals(user, responseUser);
+        assertEquals(inputJson, response.readEntity(String.class));
     }
 
     @Test
     public void testUpdateUserNotFound() throws SQLException, JsonProcessingException {
         int userId = 1;
         User user = new User(userId, "UpdatedUser", "updatedPassword");
-        String inputJson = objectMapper.writeValueAsString(user);
+        String inputJson = mockObjectMapper.writeValueAsString(user);
 
         Mockito.when(mockUserDao.updateUser(userId, user)).thenReturn(null);
 
@@ -172,7 +168,7 @@ public class UserResourceTest extends JerseyTest {
     @Test
     public void testUpdateUserInvalidInput() {
         int userId = 1;
-        String invalidInput = "{}";
+        String invalidInput = "wrong input";
 
         Response response = target("/users/" + userId).request().put(Entity.json(invalidInput));
 
@@ -183,9 +179,9 @@ public class UserResourceTest extends JerseyTest {
     public void testUpdateUserSQLException() throws SQLException, JsonProcessingException {
         int userId = 1;
         User user = new User(userId, "UpdatedUser", "updatedPassword");
-        String inputJson = objectMapper.writeValueAsString(user);
+        String inputJson = mockObjectMapper.writeValueAsString(user);
 
-        Mockito.doThrow(SQLException.class).when(mockUserDao).updateUser(userId, user);
+        Mockito.doThrow(SQLException.class).when(mockUserDao).updateUser(Mockito.eq(userId), Mockito.any(User.class));
 
         Response response = target("/users/" + userId).request().put(Entity.json(inputJson));
 
@@ -202,7 +198,7 @@ public class UserResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteUserNotFound() throws SQLException {
+    public void testDeleteUserNotFound() throws SQLException, NotFoundException {
         int userId = 1;
         Mockito.doThrow(NotFoundException.class).when(mockUserDao).deleteUser(userId);
 
@@ -212,7 +208,7 @@ public class UserResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteUserSQLException() throws SQLException {
+    public void testDeleteUserSQLException() throws SQLException, NotFoundException {
         int userId = 1;
 
         Mockito.doThrow(SQLException.class).when(mockUserDao).deleteUser(userId);

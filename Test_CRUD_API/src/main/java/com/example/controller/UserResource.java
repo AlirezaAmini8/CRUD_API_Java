@@ -7,7 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +101,7 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Bad request."),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public Response createUser(@JsonDeserialize(as = User.class) String input) {
+    public Response createUser(String input) {
         try {
             User user = mapper.readValue(input, User.class);
             User createdUser = userDao.addUser(user);
@@ -141,7 +141,7 @@ public class UserResource {
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
-    public Response updateUser(@PathParam("id") int id, @JsonDeserialize(as = User.class) String input) {
+    public Response updateUser(@PathParam("id") int id, String input) {
 
         try {
             User user = mapper.readValue(input, User.class);
@@ -158,6 +158,7 @@ public class UserResource {
                 return Response.status(Response.Status.NOT_FOUND)
                         .build();
             }
+
         }catch (IOException e) {
             logger.error("Invalid input format for User: {}", e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST)

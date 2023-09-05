@@ -1,0 +1,24 @@
+2023-09-05 17:53:56 [grizzly-http-server-0] WARN  LabelResource - No labels found for this user
+2023-09-05 17:53:56 [grizzly-http-server-0] WARN  LabelResource - This label didn't attach to any note
+2023-09-05 17:53:57 [grizzly-http-server-0] WARN  LabelResource - Label with ID 1 not found for update
+2023-09-05 17:53:57 [grizzly-http-server-0] ERROR LabelResource - Access denied: null
+2023-09-05 17:53:57 [grizzly-http-server-0] ERROR LabelResource - Error retrieving label: null
+2023-09-05 17:53:57 [grizzly-http-server-0] ERROR LabelResource - Error creating label: null
+2023-09-05 17:53:57 [grizzly-http-server-0] ERROR LabelResource - Access denied: null
+2023-09-05 17:53:57 [grizzly-http-server-0] ERROR LabelResource - Error retrieving notes for label: null
+2023-09-05 17:53:57 [grizzly-http-server-0] ERROR LabelResource - Error updating label: null
+2023-09-05 17:53:57 [grizzly-http-server-0] ERROR LabelResource - Label with ID 1 not found for delete
+2023-09-05 17:53:58 [grizzly-http-server-0] ERROR LabelResource - Access denied: null
+2023-09-05 17:53:58 [grizzly-http-server-0] ERROR LabelResource - Invalid input format for Label: Unrecognized token 'wrong': was expecting ('true', 'false' or 'null')
+ at [Source: wrong input; line: 1, column: 6]
+2023-09-05 17:53:58 [grizzly-http-server-1] WARN  LabelResource - Label with ID 1 not found
+2023-09-05 17:53:58 [grizzly-http-server-7] ERROR LabelResource - Invalid input format for Label: Unrecognized token 'wrong': was expecting ('true', 'false' or 'null')
+ at [Source: wrong input; line: 1, column: 6]
+2023-09-05 17:53:58 [grizzly-http-server-0] ERROR LabelResource - Error deleting label: null
+2023-09-05 17:53:58 [grizzly-http-server-1] ERROR LabelResource - Error retrieving labels: null
+2023-09-05 17:53:58 [grizzly-http-server-0] INFO  LabelResource - Retrieved all labels successfully.
+2023-09-05 17:53:58 [grizzly-http-server-0] INFO  LabelResource - Retrieved all notes for label with id = 1 successfully
+2023-09-05 17:53:58 [grizzly-http-server-0] INFO  LabelResource - Retrieved label with ID 1
+2023-09-05 17:53:58 [grizzly-http-server-0] INFO  LabelResource - Label created: com.example.models.Label@4bba5bb8
+2023-09-05 17:53:58 [grizzly-http-server-0] INFO  LabelResource - Label with ID 1 updated: com.example.models.Label@24618cd9
+2023-09-05 17:53:59 [grizzly-http-server-0] INFO  LabelResource - Label with ID 1 deleted.

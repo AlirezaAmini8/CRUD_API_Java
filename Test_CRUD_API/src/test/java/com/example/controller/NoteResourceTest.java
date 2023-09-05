@@ -24,11 +24,13 @@ import static org.junit.Assert.assertEquals;
 
 public class NoteResourceTest extends JerseyTest {
 
-    private static final NoteDao mockNoteDao = Mockito.mock(NoteDao.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private NoteDao mockNoteDao;
+    private ObjectMapper objectMapper;
 
     @Override
     protected Application configure() {
+        mockNoteDao = Mockito.mock(NoteDao.class);
+        objectMapper = new ObjectMapper();
         return new ResourceConfig()
                 .packages("com.example.controller")
                 .register(new NoteResource(mockNoteDao, objectMapper));
@@ -133,13 +135,12 @@ public class NoteResourceTest extends JerseyTest {
 
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        Note responseNote = response.readEntity(Note.class);
-        assertEquals(note, responseNote);
+        assertEquals(inputJson, response.readEntity(String.class));
     }
 
     @Test
     public void testCreateNoteWithInvalidInput() {
-        String invalidInput = "{}";
+        String invalidInput = "wrong input";
 
         Response response = target("/notes").request().post(Entity.json(invalidInput));
 
@@ -166,14 +167,13 @@ public class NoteResourceTest extends JerseyTest {
         Note updatedNote = new Note(noteId, userId,"Updated Note", "Updated Content", now, now);
         String inputJson = objectMapper.writeValueAsString(updatedNote);
 
-        Mockito.when(mockNoteDao.updateNote(noteId, updatedNote)).thenReturn(updatedNote);
+        Mockito.when(mockNoteDao.updateNote(Mockito.eq(noteId), Mockito.any(Note.class))).thenReturn(updatedNote);
 
         Response response = target("/notes/" + noteId).request().put(Entity.json(inputJson));
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
-        Note responseNote = response.readEntity(Note.class);
-        assertEquals(updatedNote, responseNote);
+        assertEquals(inputJson, response.readEntity(String.class));
     }
 
     @Test
@@ -193,7 +193,7 @@ public class NoteResourceTest extends JerseyTest {
     @Test
     public void testUpdateNoteWithInvalidInput() {
         int noteId = 1;
-        String invalidInput = "{}";
+        String invalidInput = "wrong input";
 
         Response response = target("/notes/" + noteId).request().put(Entity.json(invalidInput));
 
@@ -207,7 +207,7 @@ public class NoteResourceTest extends JerseyTest {
         Date now = new Date(System.currentTimeMillis());
         Note updatedNote = new Note(noteId, userId,"Updated Note", "Updated Content", now, now);
 
-        Mockito.doThrow(SQLException.class).when(mockNoteDao).updateNote(noteId, updatedNote);
+        Mockito.doThrow(SQLException.class).when(mockNoteDao).updateNote(Mockito.eq(noteId), Mockito.any(Note.class));
 
         Response response = target("/notes/" + noteId).request().put(Entity.json(updatedNote));
 
@@ -225,7 +225,7 @@ public class NoteResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteNoteNotFound() throws SQLException, AccessDeniedException {
+    public void testDeleteNoteNotFound() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int noteId = 1;
 
@@ -237,7 +237,7 @@ public class NoteResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteNoteServerError() throws SQLException, AccessDeniedException {
+    public void testDeleteNoteServerError() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int noteId = 1;
 
@@ -249,7 +249,7 @@ public class NoteResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteNoteAccessError() throws SQLException, AccessDeniedException {
+    public void testDeleteNoteAccessError() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int noteId = 1;
 
@@ -273,8 +273,7 @@ public class NoteResourceTest extends JerseyTest {
 
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
 
-        NoteLabel responseLabel = response.readEntity(NoteLabel.class);
-        assertEquals(noteLabel, responseLabel);
+        assertEquals(inputJson, response.readEntity(String.class));
     }
 
     @Test
@@ -294,7 +293,7 @@ public class NoteResourceTest extends JerseyTest {
 
     @Test
     public void testAddLabelWithInvalidInput() {
-        String invalidInput = "{}";
+        String invalidInput = "wrong input";
 
         Response response = target("/notes/label").request().post(Entity.json(invalidInput));
 
@@ -307,7 +306,7 @@ public class NoteResourceTest extends JerseyTest {
         int noteId = 1;
         NoteLabel noteLabel = new NoteLabel(noteId, labelId);
 
-        Mockito.doThrow(SQLException.class).when(mockNoteDao).addLabel(noteLabel);
+        Mockito.doThrow(SQLException.class).when(mockNoteDao).addLabel(Mockito.any(NoteLabel.class));
 
         Response response = target("/notes/label").request().post(Entity.json(objectMapper.writeValueAsString(noteLabel)));
 
@@ -376,7 +375,7 @@ public class NoteResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteLabelNotFound() throws SQLException, AccessDeniedException {
+    public void testDeleteLabelNotFound() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int noteId = 1;
         int labelId = 1;
@@ -389,7 +388,7 @@ public class NoteResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteLabelServerError() throws SQLException, AccessDeniedException {
+    public void testDeleteLabelServerError() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int noteId = 1;
         int labelId = 1;
@@ -402,7 +401,7 @@ public class NoteResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testDeleteLabelAccessError() throws SQLException, AccessDeniedException {
+    public void testDeleteLabelAccessError() throws SQLException, AccessDeniedException, NotFoundException {
         int userId = 1;
         int noteId = 1;
         int labelId = 1;

@@ -1,5 +1,7 @@
 package com.example.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.sql.Date;
 
 public class Note {
@@ -10,7 +12,12 @@ public class Note {
     private Date created_at;
     private Date modified_at;
 
-    public Note(int id, int user_id, String title, String content, Date created_at, Date modified_at) {
+    public Note(@JsonProperty("id") int id,
+                @JsonProperty("user_id") int user_id,
+                @JsonProperty("title") String title,
+                @JsonProperty("content") String content,
+                @JsonProperty("created_at") Date created_at,
+                @JsonProperty("modified_at") Date modified_at) {
         this.id = id;
         this.user_id = user_id;
         this.title = title;

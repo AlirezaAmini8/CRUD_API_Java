@@ -112,7 +112,7 @@ public class App
     }
 
 
-    // This starts the Swagger UI at http://localhost:8080/swagger-ui
+        // This starts the Swagger UI at http://localhost:8080/swagger-ui
     private static ContextHandler buildSwaggerUI() throws Exception
     {
         final ResourceHandler swaggerUIResourceHandler = new ResourceHandler();
